@@ -591,6 +591,10 @@ function startRazorpayPayment() {
         "name": MERCHANT_NAME,
         "description": "Kirana Store Order",
         "image": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png", 
+        
+        // --- ADDED CALLBACK URL HERE ---
+        "callback_url": "https://UBch7860.github.io/ubaidchoudhary/",
+
         "handler": function (response) {
             // Payment Success
             completeOrder('ONLINE', response.razorpay_payment_id);
