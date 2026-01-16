@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ubaid Kirana Store</title>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+/* --- MODERN CSS RESET & VARIABLES --- */
+:root {
+    --primary-color: #008060;
+    --primary-dark: #004c3f;
+    --accent-color: #ff6f00;  
+    --bg-color: #f6f6f7;
+    --text-dark: #1a1a1a;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    --bottom-nav-height: 60px;
+}
+
+*{box-sizing:border-box;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent;}
+body{margin:0; background: var(--bg-color); color: var(--text-dark); padding-bottom: 80px;}
+
+/* --- HEADER --- */
+.header{
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: #fff; height: 70px; display: flex; align-items: center;
+    padding: 0 15px; position: sticky; top: 0; z-index: 999;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+}
+.logo{font-weight: 700; color: #fff; font-size: 1.3rem; letter-spacing: 0.5px;}
+.search-bar{
+    flex: 1; margin-left: 15px; background: rgba(255,255,255,0.95); border-radius: 8px; 
+    overflow: hidden; display: flex; align-items: center; height: 40px;
+}
+.search-bar input{
+    width: 100%; border: none; padding: 0 10px; outline: none; font-size: 14px; background: transparent; height: 100%;
+}
+
+/* --- NAVIGATION --- */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
+    background: #fff; display: flex; justify-content: space-around; align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid #eee;
+}
+.nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 10px; color: #666; width: 25%; height: 100%; cursor: pointer;
+}
+.nav-item span { font-size: 20px; margin-bottom: 2px; }
+.nav-item.active { color: var(--primary-color); font-weight: bold; }
+.nav-cart-badge { position: relative; }
+#cartCountBadge {
+    background: var(--accent-color); color: white; font-size: 9px;
+    padding: 2px 5px; border-radius: 10px; position: absolute; top: -5px; right: -8px;
+    border: 1px solid #fff;
+}
+
+/* --- MENU --- */
+.menu-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 1001;
+}
+.menu-drawer {
+    position: absolute; bottom: -100%; left: 0; width: 100%;
+    background: #fff; border-radius: 20px 20px 0 0;
+    padding: 20px; transition: bottom 0.3s ease;
+}
+.menu-open .menu-drawer { bottom: 0; }
+.menu-open { display: block; }
+.menu-item {
+    display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0;
+    color: #333; font-size: 15px; font-weight: 500; cursor: pointer;
+}
+.menu-icon { margin-right: 15px; font-size: 18px; width: 25px; text-align: center; }
+
+/* --- PRODUCTS --- */
+.container{max-width:800px;margin:auto;padding:15px;}
+#productGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.product-item{
+    background: #fff; padding: 10px; border-radius: 12px;
+    box-shadow: var(--shadow); display: flex; flex-direction: column;
+    border: 1px solid #f0f0f0;
+}
+.product-img { width: 100%; height: 130px; object-fit: contain; margin-bottom: 12px; }
+.product-details b { display: block; margin-bottom: 4px; color: #333; font-size: 14px; }
+.product-details div { color: var(--primary-color); font-weight: 700; font-size: 16px; }
+
+/* --- BUTTONS --- */
+.btn-group{ display: flex; gap: 8px; flex-direction: column; margin-top: auto; }
+.add-btn{
+    background: #fff; color: var(--primary-color); border: 1px solid var(--primary-color);
+    padding: 10px 0; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 13px;
+}
+.buy-btn{
+    background: var(--primary-color); color: #fff; border: none;
+    padding: 12px 0; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+}
+.auth-btn {
+    background: var(--primary-color); color: white; width: 100%; padding: 14px;
+    border: none; border-radius: 10px; cursor: pointer; font-size: 16px; margin-top: 15px; font-weight: 600;
+}
+.qty-btn-group{
+    display: flex; align-items: center; background: #f4f6f8; border-radius: 8px;
+    width: 100%; justify-content: space-between; border: 1px solid #e1e3e5;
+}
+.qty-btn-group span{ padding: 8px 15px; cursor: pointer; font-weight: bold; color: var(--primary-color); }
+.qty-btn-group .qty-val{ flex-grow: 1; text-align: center; font-size: 14px; font-weight: 600; }
+
+/* --- FORMS --- */
+.hidden{display:none !important;}
+.form-card{ 
+    background: #fff; padding: 25px 20px; border-radius: 15px; 
+    box-shadow: var(--shadow); position: relative; 
+}
+.page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.close-page-btn {
+    background: #f0f0f0; width: 32px; height: 32px; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; color: #555;
+}
+input, textarea {
+    width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e1e1e1; 
+    border-radius: 10px; background: #fcfcfc; font-size: 14px;
+}
+input:focus, textarea:focus { border-color: var(--primary-color); background: #fff; outline: none; }
+
+/* --- PAYMENT STYLES --- */
+.payment-tabs { display: flex; background: #f0f0f0; border-radius: 10px; padding: 5px; margin-bottom: 20px; }
+.tab-btn { flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #666; }
+.tab-btn.active-tab { background: #fff; color: var(--primary-color); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+.payment-methods { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+.pay-option {
+    border: 1px solid #eee; border-radius: 10px; padding: 15px 5px; text-align: center;
+    cursor: pointer; transition: 0.2s; background: #fff;
+}
+.pay-option:active { transform: scale(0.95); background: #f0fcf4; border-color: var(--primary-color); }
+.pay-logo { width: 40px; height: 40px; margin-bottom: 5px; object-fit: contain; }
+.pay-label { font-size: 11px; font-weight: bold; color: #555; display: block; }
+.total-pay-display {
+    text-align: center; font-size: 24px; font-weight: 800; color: var(--primary-color); margin: 20px 0;
+}
+.cod-box {
+    background: #e8f5e9; border: 1px dashed var(--primary-color); padding: 15px; border-radius: 10px; text-align: center; color: var(--primary-dark);
+}
+
+/* --- SUCCESS MODAL --- */
+.success-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255,255,255,0.95); z-index: 2000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.checkmark { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 2; stroke: #fff; stroke-miterlimit: 10; margin: 10% auto; box-shadow: inset 0px 0px 0px #7ac142; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
+.checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #7ac142; fill: none; animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
+.checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
+@keyframes stroke { 100% { stroke-dashoffset: 0; } }
+@keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+@keyframes fill { 100% { box-shadow: inset 0px 0px 0px 50px #7ac142; } }
+
+/* ADMIN & ORDER LIST */
+.order-card { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #eee; }
+.status-pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #fff; text-transform: uppercase; }
+
+/* AUTH PAGE */
+#authPage, #verifyPage {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; background: #fff; padding: 20px; z-index: 2000; position: relative;
+}
+</style>
+</head>
+<body>
+
+<div id="successOverlay" class="success-overlay hidden">
+    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg>
+    <h2 style="color: #4CAF50; margin-top: 20px;">Order Placed!</h2>
+    <p style="color: #666;">Thank you for shopping.</p>
+    <button class="buy-btn" style="width: 200px; margin-top: 30px;" onclick="closeSuccess()">OK</button>
+</div>
+
+<div id="authPage">
+    <div style="width:100%; max-width:400px; text-align:center;">
+        <h1 style="color:var(--primary-color); margin-bottom:5px; font-size: 28px;">Ubaid Store</h1>
+        <p style="color:#666; font-size:14px; margin-bottom:30px;">Premium Quality at your Doorstep</p>
+        <div style="text-align:left; width:100%;">
+            <label style="font-size:12px; font-weight:600; color:#555; margin-left:5px;">Email</label>
+            <input type="email" id="authEmail" placeholder="name@example.com">
+            <label style="font-size:12px; font-weight:600; color:#555; margin-left:5px; margin-top:10px; display:block;">Password</label>
+            <input type="password" id="authPass" placeholder="••••••••">
+        </div>
+        <button class="auth-btn" id="mainAuthBtn" onclick="handleLogin()">Login</button>
+        <p style="margin-top: 20px; font-size: 14px; color: #666;">
+            <span id="toggleText">New here? <b onclick="toggleAuthMode()" style="color:var(--primary-color); cursor:pointer;">Create Account</b></span>
+        </p>
+        <div id="authError" style="color:red; font-size:13px; margin-top:10px;"></div>
+    </div>
+</div>
+
+<div id="verifyPage" class="hidden">
+    <div style="width:100%; max-width:400px; text-align:center;">
+        <div style="font-size:50px;">📧</div>
+        <h2 style="color:#333;">Verify Email</h2>
+        <p style="color:#666; margin:10px 0;">We sent a link to <br><strong><span id="userEmailDisplay"></span></strong></p>
+        <button class="auth-btn" style="background:#2e7d32;" onclick="checkVerification()">✅ I Have Verified</button>
+        <button style="background:none; border:none; color:#666; text-decoration:underline; margin-top:15px; cursor:pointer;" onclick="resendVerificationLink()">Resend Link</button>
+        <div style="margin-top:30px;"><span style="color:red; cursor:pointer; font-size:14px;" onclick="handleLogout()">Logout</span></div>
+    </div>
+</div>
+
+<div id="appContainer" class="hidden">
+    
+    <div class="header">
+        <div class="logo">Ubaid Store</div>
+        <div class="search-bar">
+            <span style="padding-left:12px; color:#999">🔍</span>
+            <input id="searchInput" onkeyup="filter()" placeholder="Search products...">
+        </div>
+    </div>
+
+    <div class="container" id="shopPage">
+        <h3 style="margin:10px 0 15px 0; color:#444;">Fresh Products</h3>
+        <div id="productGrid"></div>
+    </div>
+
+    <div class="container hidden" id="cartPage">
+        <div class="form-card">
+            <div class="page-title">
+                <h3>🛒 Your Cart</h3>
+                <span style="font-size:12px; color:#666;">Items: <span id="cartCountInner">0</span></span>
+            </div>
+            <div id="cartItems"></div>
+            <div style="margin-top:20px; border-top:1px dashed #ddd; padding-top:15px;">
+                <h3 id="cartTotal" style="text-align:right; margin:0;">Total: ₹0</h3>
+            </div>
+            <button class="buy-btn" style="margin-top:20px;" onclick="goToAddress('cart')">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="addressPage">
+        <div class="form-card">
+            <div class="page-title">
+                <h3>📍 Delivery Details</h3>
+                <span class="close-page-btn" onclick="goHome()">✕</span>
+            </div>
+            <div id="checkoutSummary" style="background:#fff8e1; padding:15px; border-radius:8px; margin-bottom:15px; font-size:13px; border:1px solid #ffe0b2;"></div>
+            <input type="text" id="custName" placeholder="Full Name">
+            <input type="number" id="custPhone" placeholder="Mobile Number">
+            <textarea id="custAddress" rows="3" placeholder="Full Address (House No, Area, City)"></textarea>
+            <button class="buy-btn" onclick="goToPayment()">Continue to Payment</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="paymentPage">
+        <div class="form-card">
+            <div class="page-title">
+                <h3>💳 Payment</h3>
+                <span class="close-page-btn" onclick="goBackToAddress()">✕</span>
+            </div>
+            <center>
+                <p style="color:#666; font-size:14px;">Total Amount to Pay</p>
+                <div class="total-pay-display" id="paymentTotalDisplay">₹0</div>
+            </center>
+
+            <div class="payment-tabs">
+                <div class="tab-btn active-tab" id="tabOnline" onclick="togglePaymentMode('online')">Pay Online</div>
+                <div class="tab-btn" id="tabCOD" onclick="togglePaymentMode('cod')">Cash on Delivery</div>
+            </div>
+
+            <div id="onlineSection">
+                <p style="font-size:13px; font-weight:600; color:#333;">Select Payment Method:</p>
+                <div class="payment-methods">
+                    <div class="pay-option" onclick="startRazorpayPayment()">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" class="pay-logo">
+                        <span class="pay-label">Paytm</span>
+                    </div>
+                    <div class="pay-option" onclick="startRazorpayPayment()">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" class="pay-logo">
+                        <span class="pay-label">PhonePe</span>
+                    </div>
+                    <div class="pay-option" onclick="startRazorpayPayment()">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" class="pay-logo">
+                        <span class="pay-label">GPay / UPI</span>
+                    </div>
+                </div>
+                
+                <button class="buy-btn" style="margin-top:20px; background: #2874f0;" onclick="startRazorpayPayment()">Pay Now with Razorpay</button>
+
+                <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #777;">
+                    100% Secure Payments by Razorpay<br>
+                    UPI ID: ombk.aagz475581zewh2zrp4m@mbk
+                </div>
+            </div>
+
+            <div id="codSection" class="hidden">
+                <div class="cod-box">
+                    <h3>💵 Cash on Delivery</h3>
+                    <p style="font-size:14px;">Pay cash when the product arrives at your doorstep.</p>
+                </div>
+                <button class="buy-btn" style="margin-top:20px; background:#ff6f00;" onclick="completeOrder('COD')">Confirm COD Order</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container hidden" id="myOrdersPage">
+        <div class="form-card" style="background:#f9f9f9;">
+            <div class="page-title">
+                <h3>📦 My Orders</h3>
+                <span class="close-page-btn" onclick="goHome()">✕</span>
+            </div>
+            <div id="myOrderList" style="display:flex; flex-direction:column; gap:10px;">
+                <div class="loading-spinner">Loading your orders...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container hidden" id="adminPage">
+        <div class="form-card">
+            <div class="page-title">
+                <h3>👨‍💼 Admin Panel</h3>
+                <span class="close-page-btn" onclick="goHome()">✕</span>
+            </div>
+            <div id="orderList" style="display:flex; flex-direction:column; gap:10px;">Loading...</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" id="navHomeBtn" onclick="goHome(); highlightNav(this)"><span>🏠</span>Home</div>
+        <div class="nav-item" onclick="openCart(); highlightNav(this)"><span class="nav-cart-badge">🛒<span id="cartCountBadge">0</span></span>Cart</div>
+        <div class="nav-item" onclick="openMyOrders(); highlightNav(this)"><span>📦</span>Orders</div>
+        <div class="nav-item" onclick="openMenu()"><span>👤</span>Account</div>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()">
+        <div class="menu-drawer" onclick="event.stopPropagation()">
+            <div style="text-align:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">
+                <div style="font-size:40px; margin-bottom:5px;">👤</div>
+                <strong id="menuUserEmail">user@email.com</strong>
+            </div>
+            <div id="adminLinkContainer"></div>
+            <div class="menu-item" onclick="goHome(); closeMenu();"><span class="menu-icon">🏠</span> Home</div>
+            <div class="menu-item" onclick="openMyOrders(); closeMenu();"><span class="menu-icon">📦</span> My Orders</div>
+            <div class="menu-item" onclick="alert('📞 Support: 9354996087'); closeMenu();"><span class="menu-icon">📞</span> Help & Support</div>
+            <div class="menu-item" onclick="handleLogout()" style="color:red;"><span class="menu-icon">🚪</span> Logout</div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// --- CONFIGURATION ---
+const firebaseConfig = {
+    apiKey: "AIzaSyAMszpcGMoctgFhftWixv6Dl0DRfWBk48Y",
+    authDomain: "ubaid-kirana-store.firebaseapp.com",
+    projectId: "ubaid-kirana-store",
+    storageBucket: "ubaid-kirana-store.appspot.com",
+    messagingSenderId: "530041642504",
+    appId: "1:530041642504:web:401eaa68daa66431963bbd"
+};
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+db.enablePersistence().catch((err) => console.log("Persistence error:", err.code));
+const auth = firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+
+const ADMIN_EMAIL = "ubadch89688@gmail.com";
+// **UPDATED CONFIGURATION**
+const RAZORPAY_KEY_ID = "rzp_live_S46Kk7D49BtxsN"; // Live Key
+const MERCHANT_UPI_ID = "ombk.aagz475581zewh2zrp4m@mbk"; // Updated VPA
+const MERCHANT_NAME = "Ubaid Kirana Store";
+
+let currentUser = null;
+let isRegistering = false;
+let cart = {}; 
+let directPurchaseItem = null; 
+let checkoutMode = "";
+let tempOrderDetails = {};
+
+// PRODUCTS
+const products=[
+    {id:1, name:"Tata Namak 1kg", price:28, img:"namak.jpeg.webp"},
+    {id:2, name:"Sugar 1kg", price:48, img:"41-hsMugERL._AC_UF894,1000_QL80_.jpg"},
+    {id:3, name:"Arhar Dal 1kg", price:175, img:"arhar-dal.jpg"},
+    {id:4, name:"Surf Excel 1kg", price:145, img:"619HRPW3elL._SX522_.jpg"},
+    {id:5, name:"Maggie", price:14, img:"maggi.jpg"}
+];
+
+// --- AUTH LOGIC ---
+auth.onAuthStateChanged(user => {
+    if (user) {
+        currentUser = user;
+        if (user.emailVerified) {
+            document.getElementById("authPage").style.display = "none";
+            document.getElementById("verifyPage").classList.add("hidden");
+            document.getElementById("appContainer").classList.remove("hidden");
+            loadUserCart();
+            setupMenu();
+            displayProducts();
+            updateCartDisplay();
+            loadCustomerOrders(); 
+        } else {
+            document.getElementById("authPage").style.display = "none";
+            document.getElementById("verifyPage").classList.remove("hidden");
+            document.getElementById("userEmailDisplay").innerText = user.email;
+        }
+    } else {
+        currentUser = null;
+        cart = {};
+        document.getElementById("authPage").style.display = "flex";
+        document.getElementById("appContainer").classList.add("hidden");
+        document.getElementById("verifyPage").classList.add("hidden");
+    }
+});
+
+function loadUserCart() {
+    const savedCart = localStorage.getItem('cart_' + currentUser.email);
+    cart = savedCart ? JSON.parse(savedCart) : {};
+}
+function saveUserCart() {
+    if(currentUser) localStorage.setItem('cart_' + currentUser.email, JSON.stringify(cart));
+}
+function toggleAuthMode() {
+    isRegistering = !isRegistering;
+    const btn = document.getElementById("mainAuthBtn");
+    const toggle = document.getElementById("toggleText");
+    document.getElementById("authError").innerText = "";
+    if (isRegistering) {
+        btn.innerText = "Create Account";
+        toggle.innerHTML = `Already have an account? <b onclick="toggleAuthMode()" style="color:var(--primary-color);cursor:pointer;">Login</b>`;
+    } else {
+        btn.innerText = "Login";
+        toggle.innerHTML = `New here? <b onclick="toggleAuthMode()" style="color:var(--primary-color);cursor:pointer;">Create Account</b>`;
+    }
+}
+function handleLogin() {
+    const email = document.getElementById("authEmail").value;
+    const pass = document.getElementById("authPass").value;
+    if(!email || !pass) return document.getElementById("authError").innerText = "Please fill all fields";
+    if (isRegistering) {
+        auth.createUserWithEmailAndPassword(email, pass)
+        .then((creds) => creds.user.sendEmailVerification().then(() => alert("Verification link sent!")))
+        .catch(err => document.getElementById("authError").innerText = err.message);
+    } else {
+        auth.signInWithEmailAndPassword(email, pass).catch(err => document.getElementById("authError").innerText = "Invalid Email or Password");
+    }
+}
+function checkVerification() {
+    if(currentUser) currentUser.reload().then(() => { if(currentUser.emailVerified) location.reload(); else alert("Email not verified yet!"); });
+}
+function handleLogout() {
+    cart = {}; updateCartDisplay();
+    auth.signOut().then(() => location.reload());
+}
+
+// --- MENU & UI ---
+function setupMenu() {
+    document.getElementById("menuUserEmail").innerText = currentUser.email;
+    document.getElementById("adminLinkContainer").innerHTML = (currentUser.email === ADMIN_EMAIL) ? 
+    `<div class="menu-item" onclick="openAdmin(); closeMenu();"><span class="menu-icon">🔐</span> Admin Panel</div>` : "";
+}
+function openMenu() { document.getElementById("menuOverlay").classList.add("menu-open"); }
+function closeMenu() { document.getElementById("menuOverlay").classList.remove("menu-open"); }
+function highlightNav(el) {
+    document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+    el.classList.add("active");
+}
+
+// --- STORE LOGIC ---
+function displayProducts(){
+    const grid=document.getElementById("productGrid");
+    grid.innerHTML=products.map(p => {
+        const cartItem = cart[p.id];
+        return `
+        <div class="product-item">
+            <img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150?text=Product'">
+            <div class="product-details"><b>${p.name}</b><div>₹${p.price}</div></div>
+            <div class="btn-group">
+                ${cartItem ? 
+                `<div class="qty-btn-group"><span onclick="updateQty(${p.id}, -1)">−</span><span class="qty-val">${cartItem.qty}</span><span onclick="updateQty(${p.id}, 1)">+</span></div>` : 
+                `<button class="add-btn" onclick="updateQty(${p.id}, 1)">ADD TO CART</button>`}
+                <button class="buy-btn" onclick="buyNow(${p.id})">BUY NOW</button>
+            </div>
+        </div>`;
+    }).join("");
+}
+function updateQty(id, change) {
+    const product = products.find(p => p.id === id);
+    if (!cart[id]) cart[id] = { ...product, qty: 0 };
+    cart[id].qty += change;
+    if (cart[id].qty <= 0) delete cart[id];
+    saveUserCart(); updateCartDisplay(); displayProducts();
+}
+function updateCartDisplay(){
+    let totalItems = 0, totalPrice = 0, html = "";
+    Object.values(cart).forEach(item => {
+        totalItems += item.qty; totalPrice += (item.price * item.qty);
+        html += `<div style="display:flex;justify-content:space-between;align-items:center; padding:10px 0; border-bottom:1px solid #eee;">
+            <div style="font-size:14px;">${item.name} <br><small>₹${item.price} x ${item.qty}</small></div><b>₹${item.price * item.qty}</b></div>`;
+    });
+    document.getElementById("cartCountBadge").innerText = totalItems;
+    document.getElementById("cartCountInner").innerText = totalItems;
+    document.getElementById("cartItems").innerHTML = html || "<div style='text-align:center; padding:20px; color:#999'>Your Cart is Empty ☹️</div>";
+    document.getElementById("cartTotal").innerText = "Total Pay: ₹" + totalPrice;
+}
+function buyNow(id){
+    directPurchaseItem = [{ ...products.find(p => p.id === id), qty: 1 }];
+    goToAddress('direct');
+}
+
+function hideAll(){
+    ["shopPage","cartPage","addressPage","paymentPage","adminPage","myOrdersPage"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+}
+function goHome(){ 
+    hideAll(); document.getElementById("shopPage").classList.remove("hidden"); highlightNav(document.getElementById("navHomeBtn")); displayProducts();
+}
+function openCart(){ 
+    hideAll(); document.getElementById("cartPage").classList.remove("hidden"); updateCartDisplay(); 
+}
+
+function goToAddress(mode){ 
+    checkoutMode = mode;
+    let items = (mode === 'cart') ? Object.values(cart) : directPurchaseItem;
+    if(!items || !items.length) return alert("Cart is empty!");
+    
+    let total = items.reduce((s,i)=>s+(i.price*i.qty),0);
+    document.getElementById("checkoutSummary").innerHTML = `<b>Items:</b> ${items.length} <br> <b>To Pay:</b> ₹${total}`;
+    
+    hideAll(); 
+    document.getElementById("addressPage").classList.remove("hidden"); 
+}
+
+function goBackToAddress(){
+    hideAll(); document.getElementById("addressPage").classList.remove("hidden");
+}
+
+// --- PAYMENT LOGIC ---
+function goToPayment(){
+    const name = document.getElementById("custName").value;
+    const phone = document.getElementById("custPhone").value;
+    const address = document.getElementById("custAddress").value;
+    if(!name || !phone || !address) return alert("Please fill Name, Phone, and Address first!");
+
+    tempOrderDetails = { name, phone, address };
+    const items = (checkoutMode === 'cart') ? Object.values(cart) : directPurchaseItem;
+    const total = items.reduce((s,i)=>s+(i.price*i.qty),0);
+    tempOrderDetails.total = total;
+    tempOrderDetails.items = items;
+
+    hideAll();
+    document.getElementById("paymentPage").classList.remove("hidden");
+    document.getElementById("paymentTotalDisplay").innerText = "₹" + total;
+    
+    togglePaymentMode('online');
+}
+
+function togglePaymentMode(mode) {
+    const onlineSec = document.getElementById("onlineSection");
+    const codSec = document.getElementById("codSection");
+    const tabOnline = document.getElementById("tabOnline");
+    const tabCOD = document.getElementById("tabCOD");
+
+    if(mode === 'online') {
+        onlineSec.classList.remove("hidden");
+        codSec.classList.add("hidden");
+        tabOnline.classList.add("active-tab");
+        tabCOD.classList.remove("active-tab");
+    } else {
+        onlineSec.classList.add("hidden");
+        codSec.classList.remove("hidden");
+        tabOnline.classList.remove("active-tab");
+        tabCOD.classList.add("active-tab");
+    }
+}
+
+// ** NEW RAZORPAY FUNCTION **
+function startRazorpayPayment() {
+    if (!tempOrderDetails.total) return alert("Invalid Amount");
+
+    var options = {
+        "key": RAZORPAY_KEY_ID, 
+        "amount": tempOrderDetails.total * 100, // Amount in paise
+        "currency": "INR",
+        "name": MERCHANT_NAME,
+        "description": "Kirana Store Order",
+        "image": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png", 
+        "handler": function (response) {
+            // Payment Success
+            completeOrder('ONLINE', response.razorpay_payment_id);
+        },
+        "prefill": {
+            "name": tempOrderDetails.name,
+            "email": currentUser.email,
+            "contact": tempOrderDetails.phone
+        },
+        "notes": {
+            "address": tempOrderDetails.address,
+            "merchant_upi": MERCHANT_UPI_ID // Just for record
+        },
+        "theme": {
+            "color": "#008060"
+        },
+        "modal": {
+            "ondismiss": function() {
+                // Optional: Action when modal is closed without payment
+                console.log('Payment cancelled');
+            }
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+        alert("Payment Failed: " + response.error.description);
+    });
+    rzp1.open();
+}
+
+function completeOrder(method, txnId){
+    const payStatus = (method === 'COD') ? "Pending (COD)" : "PAID (Online)";
+    const orderStatus = (method === 'COD') ? "Pending" : "Confirmed"; 
+    
+    // Add txn ID if online
+    const finalMethod = (method === 'ONLINE') ? `Online (ID: ${txnId || 'NA'})` : method;
+
+    db.collection("orders").add({
+        userEmail: currentUser.email,
+        name: tempOrderDetails.name,
+        phone: tempOrderDetails.phone,
+        address: tempOrderDetails.address,
+        items: tempOrderDetails.items,
+        total: tempOrderDetails.total,
+        orderType: checkoutMode,
+        paymentMethod: finalMethod,
+        paymentStatus: payStatus,
+        status: orderStatus,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(()=>{
+        if(checkoutMode === 'cart'){ 
+            cart={}; saveUserCart(); updateCartDisplay(); 
+        }
+        document.getElementById("paymentPage").classList.add("hidden");
+        document.getElementById("successOverlay").classList.remove("hidden");
+    }).catch(e => alert(e.message));
+}
+
+function closeSuccess(){
+    document.getElementById("successOverlay").classList.add("hidden");
+    goHome();
+}
+
+// --- ADMIN & ORDERS ---
+function openAdmin(){
+    if(currentUser.email !== ADMIN_EMAIL) return alert("Access Denied!");
+    hideAll(); document.getElementById("adminPage").classList.remove("hidden"); loadAdminOrders();
+}
+function openMyOrders(){
+    hideAll(); document.getElementById("myOrdersPage").classList.remove("hidden"); 
+}
+function loadAdminOrders(){
+  const list = document.getElementById("orderList");
+  list.innerHTML = "<div class='loading-spinner'>Loading Orders...</div>";
+  db.collection("orders").orderBy("createdAt","desc").limit(50).onSnapshot(snapshot=>{
+    let html=""; snapshot.forEach(doc=>{ html += renderOrderCard(doc, true); });
+    list.innerHTML = html || "No orders yet.";
+  });
+}
+function loadCustomerOrders(){
+    const list = document.getElementById("myOrderList");
+    if(list.innerHTML.trim() === "") list.innerHTML = "<div class='loading-spinner'>Loading your orders...</div>";
+    
+    db.collection("orders").where("userEmail", "==", currentUser.email).orderBy("createdAt","desc").limit(20)
+    .onSnapshot(snapshot => {
+        let html=""; snapshot.forEach(doc => { html += renderOrderCard(doc, false); });
+        list.innerHTML = html || "<p style='text-align:center; padding:20px'>You haven't placed any orders yet.</p>";
+    });
+}
+function renderOrderCard(doc, isAdmin) {
+    const o = doc.data();
+    let color = '#ff9800'; 
+    if(o.status === 'Confirmed') color = '#2196f3';
+    if(o.status === 'Delivered') color = '#4caf50';
+    if(o.paymentMethod.includes('COD')) color = '#795548'; 
+
+    return `<div class="order-card" style="border-left:4px solid ${color}">
+      <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+        <strong>${o.name || 'User'}</strong> 
+        <span class="status-pill" style="background:${color}">${o.status}</span>
+      </div>
+      <div style="font-size:12px; color:#555;">₹${o.total} • ${o.paymentMethod} • ${o.paymentStatus}</div>
+      <div style="margin-top:5px; font-size:12px; color:#333;">${o.items.map(i=> i.name).join(", ")}</div>
+      <div style="font-size:11px; color:#888; margin-top:3px;">${o.address}</div>
+      ${isAdmin ? `<div style="margin-top:8px; border-top:1px solid #eee; padding-top:5px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px">📞 <a href="tel:${o.phone}">${o.phone}</a></span>
+        <button onclick="updateStatus('${doc.id}','${o.status}')" style="background:#333; color:#fff; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:11px;">Change Status</button>
+      </div>` : ''}
+    </div>`;
+}
+function updateStatus(id,current){
+  let newStatus = current === "Pending" ? "Confirmed" : current === "Confirmed" ? "Delivered" : "Pending";
+  db.collection("orders").doc(id).update({status:newStatus});
+}
+function filter(){
+    let q=document.getElementById("searchInput").value.toLowerCase();
+    document.querySelectorAll(".product-item").forEach(p=>p.style.display=p.innerText.toLowerCase().includes(q)?"flex":"none");
+}
+function resendVerificationLink() { currentUser.sendEmailVerification().then(()=>alert("Sent!")); }
+</script>
+</body>
+</html>
