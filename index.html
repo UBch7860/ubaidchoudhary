@@ -45,7 +45,8 @@ body{margin:0; background: var(--bg-color); color: var(--text-dark); padding-bot
 }
 .nav-item {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 10px; color: #666; width: 25%; height: 100%; cursor: pointer;
+    font-size: 10px; color: #666; width: 25%;
+    height: 100%; cursor: pointer;
 }
 .nav-item span { font-size: 20px; margin-bottom: 2px; }
 .nav-item.active { color: var(--primary-color); font-weight: bold; }
@@ -108,6 +109,39 @@ body{margin:0; background: var(--bg-color); color: var(--text-dark); padding-bot
 .qty-btn-group span{ padding: 8px 15px; cursor: pointer; font-weight: bold; color: var(--primary-color); }
 .qty-btn-group .qty-val{ flex-grow: 1; text-align: center; font-size: 14px; font-weight: 600; }
 
+/* --- CART STYLES --- */
+.cart-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+.cart-item-img { width: 60px; height: 60px; object-fit: contain; border: 1px solid #eee; border-radius: 6px; margin-right: 12px; padding: 2px; }
+.cart-controls-mini { 
+    display: flex; align-items: center; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; margin-top: 5px; width: fit-content;
+}
+.cart-btn-mini { 
+    padding: 2px 10px; background: #f5f5f5; cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 16px; 
+}
+.cart-qty-mini { 
+    padding: 2px 10px; font-size: 13px; font-weight: 600; border-left: 1px solid #ccc; border-right: 1px solid #ccc; background: #fff;
+}
+
+/* --- CHECKOUT MINI CART STYLES (UPDATED) --- */
+.checkout-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; }
+.checkout-img { width: 50px; height: 50px; object-fit: contain; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px; background:#fff; }
+.checkout-info { flex: 1; }
+
+/* CONTROLS VISIBLE NOW */
+.checkout-controls { 
+    display: flex; align-items: center; border: 1px solid #bbb; border-radius: 4px; 
+    width: fit-content; margin-top: 5px; background: #fff; 
+}
+.checkout-btn { 
+    padding: 4px 10px; font-weight: bold; cursor: pointer; color: var(--primary-color); 
+    background: #f9f9f9; font-size: 16px; user-select: none;
+}
+.checkout-qty { 
+    padding: 2px 10px; font-size: 13px; border-left: 1px solid #bbb; 
+    border-right: 1px solid #bbb; font-weight:600; min-width: 30px; text-align: center;
+}
+
+
 /* --- FORMS --- */
 .hidden{display:none !important;}
 .form-card{ 
@@ -124,6 +158,19 @@ input, textarea {
     border-radius: 10px; background: #fcfcfc; font-size: 14px;
 }
 input:focus, textarea:focus { border-color: var(--primary-color); background: #fff; outline: none; }
+
+/* --- LOCATION BUTTON --- */
+.location-btn {
+    background: #e3f2fd; color: #1976d2; 
+    border: 1px dashed #1976d2;
+    padding: 12px; width: 100%; border-radius: 10px; 
+    margin-bottom: 15px; cursor: pointer; 
+    font-weight: 600; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.3s;
+}
+.location-btn:hover { background: #bbdefb; }
+.location-btn:active { transform: scale(0.98); }
 
 /* --- PAYMENT STYLES --- */
 .payment-tabs { display: flex; background: #f0f0f0; border-radius: 10px; padding: 5px; margin-bottom: 20px; }
@@ -262,11 +309,27 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
                 <h3>📍 Delivery Details</h3>
                 <span class="close-page-btn" onclick="goHome()">✕</span>
             </div>
-            <div id="checkoutSummary" style="background:#fff8e1; padding:15px; border-radius:8px; margin-bottom:15px; font-size:13px; border:1px solid #ffe0b2;"></div>
+            
             <input type="text" id="custName" placeholder="Full Name">
             <input type="number" id="custPhone" placeholder="Mobile Number">
+            
+            <div class="location-btn" onclick="detectLocation()" id="locBtn">
+                <span>📍</span> Use Current Location (GPS)
+            </div>
+
             <textarea id="custAddress" rows="3" placeholder="Full Address (House No, Area, City)"></textarea>
-            <button class="buy-btn" onclick="goToSlotPage()">Select Delivery Time</button>
+            
+            <label style="display:flex; align-items:center; gap:8px; margin-top:5px; margin-bottom:15px; font-size:13px; color:#555; cursor:pointer;">
+                <input type="checkbox" id="saveAddrCheckbox" checked style="width:auto; margin:0;"> Save this address for future
+            </label>
+
+            <hr style="border:0; border-top:1px dashed #ddd; margin: 15px 0;">
+
+            <div id="checkoutItemsList"></div>
+
+            <div id="checkoutBillDetails" style="margin-top: 15px; background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #ffe0b2;"></div>
+
+            <button class="buy-btn" style="margin-top:20px;" onclick="goToSlotPage()">Select Delivery Time</button>
         </div>
     </div>
 
@@ -333,13 +396,14 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
 
         </div>
     </div>
-
+    
     <div class="container hidden" id="myOrdersPage">
         <div class="form-card" style="background:#f9f9f9;">
             <div class="page-title">
                 <h3>📦 My Orders</h3>
                 <span class="close-page-btn" onclick="goHome()">✕</span>
             </div>
+            
             <div id="myOrderList" style="display:flex; flex-direction:column; gap:10px;">
                 <div class="loading-spinner">Loading your orders...</div>
             </div>
@@ -352,15 +416,16 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
                 <h3>👨‍💼 Admin Panel</h3>
                 <span class="close-page-btn" onclick="goHome()">✕</span>
             </div>
-            <div id="orderList" style="display:flex; flex-direction:column; gap:10px;">
-                </div>
+            <div id="adminOrderList" style="display:flex; flex-direction:column; gap:10px;">
+                <div class="loading-spinner">Loading all orders...</div>
+            </div>
         </div>
     </div>
 
     <div class="bottom-nav">
         <div class="nav-item active" id="navHomeBtn" onclick="goHome(); highlightNav(this)"><span>🏠</span>Home</div>
         <div class="nav-item" onclick="openCart(); highlightNav(this)"><span class="nav-cart-badge">🛒<span id="cartCountBadge">0</span></span>Cart</div>
-        <div class="nav-item" onclick="openMyOrders(); highlightNav(this)"><span>📦</span>Orders</div>
+        <div class="nav-item" onclick="openMyOrders(); highlightNav(this)"><span>📦</span>Orders</div> 
         <div class="nav-item" onclick="openMenu()"><span>👤</span>Account</div>
     </div>
 
@@ -371,8 +436,9 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
                 <strong id="menuUserEmail">user@email.com</strong>
             </div>
             <div id="adminLinkContainer"></div>
+            
             <div class="menu-item" onclick="goHome(); closeMenu();"><span class="menu-icon">🏠</span> Home</div>
-            <div class="menu-item" onclick="openMyOrders(); closeMenu();"><span class="menu-icon">📦</span> My Orders</div>
+            <div class="menu-item" onclick="openMyOrders(); closeMenu();"><span class="menu-icon">📦</span> My Orders</div> 
             <div class="menu-item" onclick="alert('📞 Support: 9354996087'); closeMenu();"><span class="menu-icon">📞</span> Help & Support</div>
             <div class="menu-item" onclick="handleLogout()" style="color:red;"><span class="menu-icon">🚪</span> Logout</div>
         </div>
@@ -397,13 +463,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
-db.enablePersistence().catch((err) => console.log("Persistence error:", err.code));
 const auth = firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
 const ADMIN_EMAIL = "ubadch89688@gmail.com"; 
-const RAZORPAY_KEY_ID = "rzp_live_S46Kk7D49BtxsN"; // Live Key
-const MERCHANT_UPI_ID = "ombk.aagz475581zewh2zrp4m@mbk"; // Updated VPA
+const RAZORPAY_KEY_ID = "rzp_live_S46Kk7D49BtxsN"; 
+const MERCHANT_UPI_ID = "ombk.aagz475581zewh2zrp4m@mbk";
 const MERCHANT_NAME = "Ubaid Kirana Store";
 
 let currentUser = null;
@@ -413,8 +478,7 @@ let directPurchaseItem = null;
 let checkoutMode = "";
 let tempOrderDetails = {};
 let selectedSlot = ""; 
-// Global variable to check if admin listener is running
-let adminSubscription = null;
+let customerLocation = null; 
 
 // PRODUCTS
 const products=[
@@ -437,7 +501,8 @@ auth.onAuthStateChanged(user => {
             setupMenu();
             displayProducts();
             updateCartDisplay();
-            loadCustomerOrders(); 
+            loadCustomerOrders();
+            loadUserProfile(); 
         } else {
             document.getElementById("authPage").style.display = "none";
             document.getElementById("verifyPage").classList.remove("hidden");
@@ -451,6 +516,17 @@ auth.onAuthStateChanged(user => {
         document.getElementById("verifyPage").classList.add("hidden");
     }
 });
+
+let userProfileData = {};
+
+function loadUserProfile(){
+    if(!currentUser) return;
+    db.collection("users").doc(currentUser.email).get().then(doc => {
+        if(doc.exists) {
+            userProfileData = doc.data();
+        }
+    });
+}
 
 function loadUserCart() {
     const savedCart = localStorage.getItem('cart_' + currentUser.email);
@@ -502,8 +578,12 @@ function handleLogout() {
 // --- MENU & UI ---
 function setupMenu() {
     document.getElementById("menuUserEmail").innerText = currentUser.email;
-    document.getElementById("adminLinkContainer").innerHTML = (currentUser.email === ADMIN_EMAIL) ? 
-    `<div class="menu-item" onclick="openAdmin(); closeMenu();"><span class="menu-icon">🔐</span> Admin Panel</div>` : "";
+    if (currentUser.email === ADMIN_EMAIL) {
+        document.getElementById("adminLinkContainer").innerHTML = 
+        `<div class="menu-item" onclick="openAdmin(); closeMenu();"><span class="menu-icon">🔐</span> Admin Panel</div>`;
+    } else {
+        document.getElementById("adminLinkContainer").innerHTML = "";
+    }
 }
 function openMenu() { document.getElementById("menuOverlay").classList.add("menu-open"); }
 function closeMenu() { document.getElementById("menuOverlay").classList.remove("menu-open"); }
@@ -537,25 +617,82 @@ function updateQty(id, change) {
     if (cart[id].qty <= 0) delete cart[id];
     saveUserCart(); updateCartDisplay(); displayProducts();
 }
+
+// FIXED: Update Qty from Checkout/Direct Buy
+function updateQtyCheckout(id, change) {
+    if (checkoutMode === 'cart') {
+        // Normal Cart Logic
+        updateQty(id, change);
+        if (Object.keys(cart).length === 0) {
+            goHome();
+        } else {
+            goToAddress('cart', true);
+        }
+    } else {
+        // Direct Buy Logic - Update local array only
+        if(directPurchaseItem && directPurchaseItem.length > 0 && directPurchaseItem[0].id === id) {
+            directPurchaseItem[0].qty += change;
+            if(directPurchaseItem[0].qty <= 0) {
+                goHome(); // Back to home if 0
+            } else {
+                goToAddress('direct', true); // Refresh checkout
+            }
+        }
+    }
+}
+
 function updateCartDisplay(){
-    let totalItems = 0, totalPrice = 0, html = "";
+    let totalItems = 0, subTotal = 0, html = "";
     Object.values(cart).forEach(item => {
-        totalItems += item.qty; totalPrice += (item.price * item.qty);
-        html += `<div style="display:flex;justify-content:space-between;align-items:center; padding:10px 0; border-bottom:1px solid #eee;">
-            <div style="font-size:14px;">${item.name} <br><small>₹${item.price} x ${item.qty}</small></div><b>₹${item.price * item.qty}</b></div>`;
+        totalItems += item.qty; 
+        subTotal += (item.price * item.qty);
+        html += `
+        <div class="cart-row">
+            <img src="${item.img}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/60?text=Item'">
+            <div style="flex:1;">
+                <div style="font-size:14px; font-weight:600;">${item.name}</div>
+                <div style="font-size:12px; color:#666;">Unit Price: ₹${item.price}</div>
+                <div class="cart-controls-mini">
+                    <div class="cart-btn-mini" onclick="updateQty(${item.id}, -1)">−</div>
+                    <div class="cart-qty-mini">${item.qty}</div>
+                    <div class="cart-btn-mini" onclick="updateQty(${item.id}, 1)">+</div>
+                </div>
+            </div>
+            <div style="font-weight:bold; font-size:15px; margin-left:10px;">₹${item.price * item.qty}</div>
+        </div>`;
     });
+
+    let deliveryCharge = 0;
+    let deliveryText = "<span style='color:green'>Free</span>";
+    if (subTotal > 0 && subTotal < 199) {
+        deliveryCharge = 20;
+        deliveryText = "₹20";
+    }
+
+    let finalTotal = subTotal + deliveryCharge;
+    if(subTotal > 0) {
+        html += `<div style="display:flex;justify-content:space-between;align-items:center; padding:10px 0; border-bottom:1px solid #eee; color:#666;">
+            <div style="font-size:14px;">Delivery Charge</div><b>${deliveryText}</b></div>`;
+    }
+
     document.getElementById("cartCountBadge").innerText = totalItems;
     document.getElementById("cartCountInner").innerText = totalItems;
     document.getElementById("cartItems").innerHTML = html || "<div style='text-align:center; padding:20px; color:#999'>Your Cart is Empty ☹️</div>";
-    document.getElementById("cartTotal").innerText = "Total Pay: ₹" + totalPrice;
+    document.getElementById("cartTotal").innerText = "Total Pay: ₹" + finalTotal;
 }
+
+// FIXED: Buy Now checks cart first
 function buyNow(id){
-    directPurchaseItem = [{ ...products.find(p => p.id === id), qty: 1 }];
+    let item = cart[id];
+    // If item is in cart, use that qty. Else start with 1.
+    let qty = item ? item.qty : 1;
+    
+    directPurchaseItem = [{ ...products.find(p => p.id === id), qty: qty }];
     goToAddress('direct');
 }
 
 function hideAll(){
-    ["shopPage","cartPage","addressPage","slotPage","paymentPage","adminPage","myOrdersPage"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+    ["shopPage","cartPage","addressPage","slotPage","paymentPage","myOrdersPage","adminPage"].forEach(id=>document.getElementById(id).classList.add("hidden"));
 }
 function goHome(){ 
     hideAll(); document.getElementById("shopPage").classList.remove("hidden"); highlightNav(document.getElementById("navHomeBtn")); displayProducts();
@@ -564,20 +701,110 @@ function openCart(){
     hideAll(); document.getElementById("cartPage").classList.remove("hidden"); updateCartDisplay(); 
 }
 
-function goToAddress(mode){ 
+function goToAddress(mode, isRefresh = false){ 
     checkoutMode = mode;
     let items = (mode === 'cart') ? Object.values(cart) : directPurchaseItem;
     if(!items || !items.length) return alert("Cart is empty!");
     
-    let total = items.reduce((s,i)=>s+(i.price*i.qty),0);
-    document.getElementById("checkoutSummary").innerHTML = `<b>Items:</b> ${items.length} <br> <b>To Pay:</b> ₹${total}`;
+    let itemTotal = items.reduce((s,i)=>s+(i.price*i.qty),0);
     
-    hideAll(); 
-    document.getElementById("addressPage").classList.remove("hidden"); 
+    let deliveryCharge = (itemTotal < 199) ? 20 : 0;
+    let finalTotal = itemTotal + deliveryCharge;
+    
+    // FIXED: +/- Buttons now appear for BOTH 'cart' and 'direct' modes
+    let itemsHtml = items.map(i => `
+        <div class="checkout-item">
+            <img src="${i.img}" class="checkout-img" onerror="this.src='https://via.placeholder.com/50?text=Item'">
+            <div class="checkout-info">
+                <div style="font-size:13px; font-weight:600;">${i.name}</div>
+                <div style="font-size:12px; color:#666;">₹${i.price}</div>
+                
+                <div class="checkout-controls">
+                    <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, -1)">−</div>
+                    <div class="checkout-qty">${i.qty}</div>
+                    <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, 1)">+</div>
+                </div>
+                
+            </div>
+            <div style="font-weight:bold; font-size:14px; margin-left:8px;">₹${i.price * i.qty}</div>
+        </div>
+    `).join("");
+
+    document.getElementById("checkoutItemsList").innerHTML = `
+        <h4 style="margin:0 0 10px 0; color:#444;">🛒 Your Basket</h4>
+        ${itemsHtml}
+    `;
+
+    let deliveryText = (deliveryCharge === 0) 
+        ? `<span style="color:green; font-weight:bold;">FREE</span>` 
+        : `<span style="color:red; font-weight:bold;">₹20</span>`;
+
+    let freeDelNote = (itemTotal < 199)
+        ? `<div style="font-size:11px; color:#d32f2f; margin-top:5px;">⚠️ Add items worth ₹${199 - itemTotal} more for FREE Delivery!</div>`
+        : `<div style="font-size:11px; color:green; margin-top:5px;">✅ Free Delivery Applied (Orders > ₹199)</div>`;
+
+    document.getElementById("checkoutBillDetails").innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:5px;">
+            <span>Item Total</span> <b>₹${itemTotal}</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:16px; margin-bottom:10px;">
+            <span>Delivery Charge</span> ${deliveryText}
+        </div>
+        <hr style="border-top:1px dashed #aaa;">
+        <div style="display:flex; justify-content:space-between; font-size:20px; color:var(--primary-color); margin-top:5px;">
+            <strong>TOTAL TO PAY</strong> 
+            <strong>₹${finalTotal}</strong>
+        </div>
+        <div style="text-align:center; margin-top:8px;">${freeDelNote}</div>
+    `;
+    
+    if(!isRefresh) {
+        hideAll(); 
+        document.getElementById("addressPage").classList.remove("hidden"); 
+        if(userProfileData) {
+            if(userProfileData.name && !document.getElementById("custName").value) 
+                document.getElementById("custName").value = userProfileData.name;
+            if(userProfileData.phone && !document.getElementById("custPhone").value) 
+                document.getElementById("custPhone").value = userProfileData.phone;
+            if(userProfileData.address && !document.getElementById("custAddress").value) 
+                document.getElementById("custAddress").value = userProfileData.address;
+        }
+    }
 }
 
 function goBackToAddress(){
     hideAll(); document.getElementById("addressPage").classList.remove("hidden");
+}
+
+// --- LOCATION FUNCTION ---
+function detectLocation() {
+    const btn = document.getElementById("locBtn");
+    const addressBox = document.getElementById("custAddress");
+    if (!navigator.geolocation) return alert("Geolocation not supported");
+
+    btn.innerHTML = "<span>🛰️</span> Locating...";
+    
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        customerLocation = { lat: lat, lng: lon }; 
+
+        try {
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if(data && data.display_name) {
+                addressBox.value = data.display_name;
+                btn.innerHTML = "<span>✅</span> Location Detected!";
+            }
+        } catch (error) {
+            addressBox.value = `Lat: ${lat}, Lon: ${lon} (Please add details)`;
+        }
+        setTimeout(() => { btn.innerHTML = "<span>📍</span> Use Current Location (GPS)"; }, 3000);
+    }, (error) => {
+        alert("Location error: " + error.message);
+        btn.innerHTML = "<span>📍</span> Use Current Location (GPS)";
+    });
 }
 
 // --- TIME SLOT LOGIC ---
@@ -585,15 +812,30 @@ function goToSlotPage() {
     const name = document.getElementById("custName").value;
     const phone = document.getElementById("custPhone").value;
     const address = document.getElementById("custAddress").value;
+    const saveAddr = document.getElementById("saveAddrCheckbox").checked; 
+
     if(!name || !phone || !address) return alert("Please fill Name, Phone, and Address first!");
+
+    if(saveAddr) {
+        db.collection("users").doc(currentUser.email).set({
+            name: name, phone: phone, address: address
+        }, { merge: true }).then(() => {
+            userProfileData = { name, phone, address };
+        });
+    }
 
     tempOrderDetails = { name, phone, address };
     const items = (checkoutMode === 'cart') ? Object.values(cart) : directPurchaseItem;
-    const total = items.reduce((s,i)=>s+(i.price*i.qty),0);
-    tempOrderDetails.total = total;
+    const itemTotal = items.reduce((s,i)=>s+(i.price*i.qty),0);
+    const deliveryCharge = (itemTotal < 199) ? 20 : 0;
+    const finalTotal = itemTotal + deliveryCharge;
+
+    tempOrderDetails.itemTotal = itemTotal;
+    tempOrderDetails.deliveryCharge = deliveryCharge;
+    tempOrderDetails.total = finalTotal;
     tempOrderDetails.items = items;
 
-    generateSlots(); // Generate time slots
+    generateSlots(); 
     hideAll();
     document.getElementById("slotPage").classList.remove("hidden");
 }
@@ -601,36 +843,28 @@ function goToSlotPage() {
 function generateSlots() {
     const container = document.getElementById("slotsContainer");
     container.innerHTML = "";
-    selectedSlot = ""; // Reset
-
+    selectedSlot = ""; 
     const now = new Date();
-    const currentHour = now.getHours(); // 0-23
+    const currentHour = now.getHours(); 
     
-    // Slots definition with Cutoff Hour
     const slots = [
-        { label: "10:00 AM - 12:00 PM", cutoff: 9 },  // Valid if ordered before 9 AM
-        { label: "01:00 PM - 03:00 PM", cutoff: 12 }, // Valid if ordered before 12 PM
-        { label: "05:00 PM - 07:00 PM", cutoff: 17 }  // Valid if ordered before 5 PM
+        { label: "10:00 AM - 12:00 PM", cutoff: 9 },  
+        { label: "01:00 PM - 03:00 PM", cutoff: 12 }, 
+        { label: "05:00 PM - 07:00 PM", cutoff: 17 }  
     ];
 
     let availableSlots = [];
     let isTomorrow = false;
-
-    // Check if it's after 5 PM (17:00)
     if (currentHour >= 17) {
         isTomorrow = true;
-        availableSlots = slots; // Show all slots for tomorrow
+        availableSlots = slots; 
     } else {
-        // Filter slots for Today based on cutoff
         availableSlots = slots.filter(s => currentHour < s.cutoff);
-        
-        // Safety check: if somehow empty but before 5pm (unlikely with this logic), show tomorrow
         if(availableSlots.length === 0) {
             isTomorrow = true;
             availableSlots = slots;
         }
     }
-
     const dayText = isTomorrow ? "TOMORROW" : "TODAY";
     
     availableSlots.forEach(slot => {
@@ -649,13 +883,10 @@ function generateSlots() {
 // --- PAYMENT LOGIC ---
 function goToPayment(){
     if(!selectedSlot) return alert("Please select a delivery time slot!");
-    
     tempOrderDetails.deliverySlot = selectedSlot;
-
     hideAll();
     document.getElementById("paymentPage").classList.remove("hidden");
     document.getElementById("paymentTotalDisplay").innerText = "₹" + tempOrderDetails.total;
-    
     togglePaymentMode('online');
 }
 
@@ -684,7 +915,7 @@ function startRazorpayPayment() {
 
     var options = {
         "key": RAZORPAY_KEY_ID, 
-        "amount": tempOrderDetails.total * 100, // Amount in paise
+        "amount": tempOrderDetails.total * 100, 
         "currency": "INR",
         "name": MERCHANT_NAME,
         "description": "Order Payment",
@@ -723,8 +954,11 @@ function completeOrder(method, txnId){
         name: tempOrderDetails.name,
         phone: tempOrderDetails.phone,
         address: tempOrderDetails.address,
-        deliverySlot: tempOrderDetails.deliverySlot, // Saving Slot
+        gpsLocation: customerLocation || null, 
+        deliverySlot: tempOrderDetails.deliverySlot, 
         items: tempOrderDetails.items,
+        itemTotal: tempOrderDetails.itemTotal,
+        deliveryCharge: tempOrderDetails.deliveryCharge,
         total: tempOrderDetails.total,
         orderType: checkoutMode,
         paymentMethod: finalMethod,
@@ -737,6 +971,7 @@ function completeOrder(method, txnId){
         }
         document.getElementById("paymentPage").classList.add("hidden");
         document.getElementById("successOverlay").classList.remove("hidden");
+        customerLocation = null;
     }).catch(e => alert(e.message));
 }
 
@@ -745,76 +980,139 @@ function closeSuccess(){
     goHome();
 }
 
-// --- ADMIN & ORDERS ---
+// --- ADDED: MY ORDERS & UTILS ---
+function openMyOrders(){
+    hideAll(); document.getElementById("myOrdersPage").classList.remove("hidden"); 
+}
+
+// --- ADMIN & ORDERS LOGIC ---
 function openAdmin(){
     if(currentUser.email !== ADMIN_EMAIL) return alert("Access Denied!");
     hideAll(); 
     document.getElementById("adminPage").classList.remove("hidden");
-    
-    // Fix: Only load if not already listening
-    if(!adminSubscription) {
-        loadAdminOrders();
-    }
+    loadAdminOrders();
 }
-function openMyOrders(){
-    hideAll(); document.getElementById("myOrdersPage").classList.remove("hidden"); 
-}
-function loadAdminOrders(){
-  const list = document.getElementById("orderList");
-  // Fix: Only show spinner if the list is actually empty (first load)
-  if(list.children.length === 0) {
-      list.innerHTML = "<div class='loading-spinner' style='padding:20px;text-align:center;'>Loading Orders...</div>";
-  }
 
-  adminSubscription = db.collection("orders").orderBy("createdAt","desc").limit(50).onSnapshot(snapshot=>{
-    let html=""; 
-    snapshot.forEach(doc=>{ html += renderOrderCard(doc, true); });
+function loadAdminOrders(){
+  const list = document.getElementById("adminOrderList");
+  list.innerHTML = "<div class='loading-spinner' style='padding:20px;text-align:center;'>Loading Orders...</div>";
+  db.collection("orders").limit(50).onSnapshot(snapshot=>{
+    let orders = [];
+    snapshot.forEach(doc => {
+        orders.push({id: doc.id, ...doc.data()});
+    });
+    orders.sort((a,b) => {
+        let t1 = a.createdAt ? a.createdAt.seconds : 0;
+        let t2 = b.createdAt ? b.createdAt.seconds : 0;
+        return t2 - t1; 
+    });
+    let html = "";
+    orders.forEach(o => { html += renderOrderCard(o, true); });
     list.innerHTML = html || "<div style='text-align:center; padding:20px'>No orders found.</div>";
   });
 }
+
 function loadCustomerOrders(){
     const list = document.getElementById("myOrderList");
     if(list.innerHTML.trim() === "") list.innerHTML = "<div class='loading-spinner'>Loading your orders...</div>";
-    
-    db.collection("orders").where("userEmail", "==", currentUser.email).orderBy("createdAt","desc").limit(20)
+    db.collection("orders").limit(50)
     .onSnapshot(snapshot => {
-        let html=""; snapshot.forEach(doc => { html += renderOrderCard(doc, false); });
-        list.innerHTML = html || "<p style='text-align:center; padding:20px'>You haven't placed any orders yet.</p>";
+        if(snapshot.empty) {
+            list.innerHTML = "<p style='text-align:center'>Database is empty (No orders at all)</p>";
+            return;
+        }
+        let orders = [];
+        let myOrdersCount = 0;
+        snapshot.forEach(doc => { 
+            let data = doc.data();
+            if(data.userEmail === currentUser.email) {
+                 orders.push({id: doc.id, ...data});
+                 myOrdersCount++;
+            }
+        });
+        if(myOrdersCount === 0) {
+             list.innerHTML = "<p style='text-align:center; padding:20px'>You haven't placed any orders yet.</p>";
+             return;
+        }
+        orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        let html=""; 
+        orders.forEach(o => { html += renderOrderCard(o, false); });
+        list.innerHTML = html;
+    }, (error) => {
+        list.innerHTML = `<p style="color:red; text-align:center;">Error: ${error.message}</p>`;
     });
 }
-function renderOrderCard(doc, isAdmin) {
-    const o = doc.data();
+
+function renderOrderCard(o, isAdmin) {
     let color = '#ff9800'; 
     if(o.status === 'Confirmed') color = '#2196f3';
     if(o.status === 'Delivered') color = '#4caf50';
-    if(o.paymentMethod.includes('COD')) color = '#795548'; 
+    let pm = o.paymentMethod || '';
+    if(pm.includes('COD')) color = '#795548'; 
 
-    // Dynamic Button Logic
-    let btnText = "Change Status";
-    let btnBg = "#333";
-    if(o.status === "Pending") { btnText = "✅ Confirm Order"; btnBg = "#2e7d32"; }
-    else if(o.status === "Confirmed") { btnText = "🚚 Mark Delivered"; btnBg = "#1976d2"; }
-    else if(o.status === "Delivered") { btnText = "↩ Reset"; btnBg = "#757575"; }
-
+    let dateStr = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString() : 'Just now';
+    
+    let itemsHtml = '';
+    if (o.items && Array.isArray(o.items)) {
+        itemsHtml = o.items.map(i => `<div style="font-size:12px; display:flex; justify-content:space-between;"><span>${i.name} x${i.qty}</span><span>₹${i.price * i.qty}</span></div>`).join("");
+    }
+    let deliveryRow = "";
+    if(o.deliveryCharge && o.deliveryCharge > 0) {
+        deliveryRow = `<div style="font-size:12px; display:flex; justify-content:space-between; color:#d32f2f;"><span>Delivery Charge</span><span>₹${o.deliveryCharge}</span></div>`;
+    }
+    let mapLink = "";
+    if(isAdmin && o.gpsLocation && o.gpsLocation.lat && o.gpsLocation.lng) {
+        const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${o.gpsLocation.lat},${o.gpsLocation.lng}`;
+        mapLink = `<a href="${googleMapsUrl}" target="_blank" style="display:inline-block; margin-top:5px; color:#fff; background:#4285F4; padding:3px 8px; border-radius:4px; text-decoration:none; font-size:11px;">🗺️ Open Map</a>`;
+    }
+    let adminControls = "";
+    if (isAdmin) {
+        let nextStatus = "";
+        let btnLabel = "";
+        let btnBg = "";
+        if(o.status === "Pending") { 
+            nextStatus = "Confirmed"; btnLabel = "✅ Accept"; btnBg = "#2e7d32"; 
+        } else if(o.status === "Confirmed") { 
+            nextStatus = "Delivered"; btnLabel = "🚚 Deliver"; btnBg = "#1976d2"; 
+        } else { 
+            nextStatus = "Pending"; btnLabel = "↩ Reset"; btnBg = "#555"; 
+        }
+        adminControls = `
+        <div style="margin-top:10px; padding-top:10px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:12px">📞 <a href="tel:${o.phone}" style="color:blue;text-decoration:none;">${o.phone}</a></span>
+            <button onclick="updateStatus('${o.id}','${nextStatus}')" style="background:${btnBg}; color:#fff; border:none; border-radius:4px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:bold;">${btnLabel}</button>
+        </div>`;
+    }
     return `<div class="order-card" style="border-left:4px solid ${color}">
       <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-        <strong>${o.name || 'User'}</strong> 
+        <strong>${o.name || 'User'} (${o.status})</strong> 
         <span class="status-pill" style="background:${color}">${o.status}</span>
       </div>
-      <div style="font-size:12px; color:#555;">₹${o.total} • ${o.paymentMethod}</div>
+      <div style="font-size:12px; color:#555; margin-bottom:5px;">${dateStr} • ₹${o.total} • ${o.paymentMethod}</div>
       <div style="font-size:13px; font-weight:bold; color:var(--primary-color); margin: 3px 0;">⏰ ${o.deliverySlot || 'Standard Delivery'}</div>
-      <div style="margin-top:5px; font-size:12px; color:#333;">${o.items.map(i=> i.name).join(", ")}</div>
-      <div style="font-size:11px; color:#888; margin-top:3px;">${o.address}</div>
-      ${isAdmin ? `<div style="margin-top:8px; border-top:1px solid #eee; padding-top:5px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:11px">📞 <a href="tel:${o.phone}">${o.phone}</a></span>
-        <button onclick="updateStatus('${doc.id}','${o.status}')" style="background:${btnBg}; color:#fff; border:none; border-radius:4px; padding:6px 12px; cursor:pointer; font-size:11px; font-weight:bold;">${btnText}</button>
-      </div>` : ''}
+      <div style="background:#f5f5f5; padding:8px; border-radius:5px; margin-top:5px;">
+          <div style="font-size:12px; font-weight:bold; color:#333; margin-bottom:2px;">Items:</div>
+          ${itemsHtml}
+          ${deliveryRow}
+      </div>
+      <div style="font-size:11px; color:#888; margin-top:8px;">
+        📍 ${o.address} <br>
+        ${mapLink}
+      </div>
+      ${adminControls}
     </div>`;
 }
-function updateStatus(id,current){
-  let newStatus = current === "Pending" ? "Confirmed" : current === "Confirmed" ? "Delivered" : "Pending";
-  db.collection("orders").doc(id).update({status:newStatus});
+
+function updateStatus(id, newStatus){
+    if(!confirm("Change status to " + newStatus + "?")) return;
+    db.collection("orders").doc(id).update({
+        status: newStatus
+    }).then(() => {
+    }).catch((error) => {
+        alert("Error updating status: " + error.message);
+    });
 }
+
 function filter(){
     let q=document.getElementById("searchInput").value.toLowerCase();
     document.querySelectorAll(".product-item").forEach(p=>p.style.display=p.innerText.toLowerCase().includes(q)?"flex":"none");
