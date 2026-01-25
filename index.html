@@ -11,7 +11,7 @@
     --primary-color: #008060;
     --primary-dark: #004c3f;
     --accent-color: #ff6f00;  
-    --bg-color: #f6f6f7;
+    --bg-color: #f1f3f6;
     --text-dark: #1a1a1a;
     --card-bg: #ffffff;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -75,143 +75,178 @@ body{margin:0; background: var(--bg-color); color: var(--text-dark); padding-bot
 }
 .menu-icon { margin-right: 15px; font-size: 18px; width: 25px; text-align: center; }
 
-/* --- PRODUCTS --- */
-.container{max-width:800px;margin:auto;padding:15px;}
-#productGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+/* --- PRODUCTS GRID --- */
+.container{max-width:800px;margin:auto;padding:10px;}
+#productGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .product-item{
-    background: #fff; padding: 10px; border-radius: 12px;
-    box-shadow: var(--shadow); display: flex; flex-direction: column;
+    background: #fff; padding: 10px; border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; flex-direction: column;
     border: 1px solid #f0f0f0;
+    position: relative;
 }
-.product-img { width: 100%; height: 130px; object-fit: contain; margin-bottom: 12px; }
-.product-details b { display: block; margin-bottom: 4px; color: #333; font-size: 14px; }
-.product-details div { color: var(--primary-color); font-weight: 700; font-size: 16px; }
+
+.product-img { 
+    width: 100%; height: 160px; object-fit: contain; margin-bottom: 12px; 
+    display: block; margin-left: auto; margin-right: auto; cursor: pointer;
+}
+
+.product-details b { 
+    display: block; margin-bottom: 4px; color: #212121; font-size: 14px; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.product-desc-text {
+    font-size: 11px; color: #878787; margin-bottom: 6px; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; text-overflow: ellipsis;
+}
+
+/* --- PRODUCT DETAILS PAGE (FULL SCREEN) --- */
+#productDetailsPage {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #fff; z-index: 2000; /* Higher than nav */
+    overflow-y: auto; display: none; /* Hidden by default */
+    padding-bottom: 80px; /* Space for bottom buttons */
+}
+#productDetailsPage.active { display: block; }
+
+.pd-header {
+    position: sticky; top: 0; background: #fff; padding: 15px; 
+    display: flex; align-items: center; border-bottom: 1px solid #eee; z-index: 2001;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.pd-back { font-size: 24px; margin-right: 15px; color: #333; cursor: pointer; }
+.pd-title-top { font-size: 16px; font-weight: 600; color: #333; }
+
+.pd-scroll-content { padding: 15px; }
+
+.pd-image-box {
+    width: 100%; height: 320px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid #f0f0f0; margin-bottom: 20px; border-radius: 8px; background: #fff;
+    padding: 10px;
+}
+.pd-image { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.pd-main-title { font-size: 22px; font-weight: 700; color: #212121; margin-bottom: 5px; line-height: 1.3; }
+.pd-price { font-size: 26px; font-weight: 700; color: #212121; margin: 10px 0; }
+
+/* NEW BADGES CSS */
+.pd-badges { 
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 25px; margin-bottom: 20px; 
+    justify-content: center; padding: 15px; background: #fafafa; border-radius: 8px; border: 1px dashed #ddd;
+}
+.badge-pill { 
+    font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 4px; 
+    display: flex; align-items: center; gap: 5px; border: 1px solid transparent;
+}
+.b-assured { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
+.b-cod { background: #fff3e0; color: #ef6c00; border-color: #ffe0b2; }
+.b-fresh { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+
+.pd-desc-box { margin-top: 25px; padding-top: 20px; border-top: 6px solid #f1f3f6; }
+.pd-label { font-size: 16px; font-weight: 800; color: #333; margin-bottom: 15px; }
+.pd-text { 
+    font-size: 15px; color: #444; line-height: 1.8; /* KHULA KHULA TEXT */
+    letter-spacing: 0.3px; 
+}
+.pd-text ul { padding-left: 20px; margin: 10px 0; }
+.pd-text li { margin-bottom: 8px; }
+
+/* RELATED PRODUCTS CSS */
+.related-section { margin-top: 30px; border-top: 6px solid #f1f3f6; padding-top: 20px; }
+.related-header { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 15px; }
+.related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rel-card { border: 1px solid #eee; border-radius: 8px; padding: 8px; background: #fff; cursor: pointer; }
+.rel-img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 5px; }
+.rel-name { font-size: 12px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rel-price { font-size: 13px; font-weight: 700; color: var(--primary-color); }
+
+
+/* Sticky Bottom Buttons for Details Page */
+.pd-footer-actions {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+    background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    display: flex; align-items: center; padding: 0 10px; gap: 10px; z-index: 2002;
+}
+
+/* --- RATING --- */
+.rating-row { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
+.rating-badge { background-color: #388e3c; color: white; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+.rating-count { color: #878787; font-size: 11px; font-weight: 500; }
+.f-assured { display: flex; align-items: center; height: 18px; margin-left:auto;}
+.f-assured img { height: 18px; width: auto; margin-right: 3px; }
+.f-assured-text { font-size: 11px; font-weight: 700; color: #2874f0; font-style: italic; }
+
+.product-details div.price-tag { color: #212121; font-weight: 600; font-size: 16px; margin-bottom: 8px; }
 
 /* --- BUTTONS --- */
 .btn-group{ display: flex; gap: 8px; flex-direction: column; margin-top: auto; }
 .add-btn{
     background: #fff; color: var(--primary-color); border: 1px solid var(--primary-color);
-    padding: 10px 0; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 13px;
+    padding: 8px 0; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%; font-size: 13px; text-transform: uppercase;
 }
 .buy-btn{
     background: var(--primary-color); color: #fff; border: none;
-    padding: 12px 0; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;
-    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+    padding: 10px 0; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .auth-btn {
     background: var(--primary-color); color: white; width: 100%; padding: 14px;
     border: none; border-radius: 10px; cursor: pointer; font-size: 16px; margin-top: 15px; font-weight: 600;
 }
 .qty-btn-group{
-    display: flex; align-items: center; background: #f4f6f8; border-radius: 8px;
-    width: 100%; justify-content: space-between; border: 1px solid #e1e3e5;
+    display: flex; align-items: center; background: #fff; border-radius: 4px;
+    width: 100%; justify-content: space-between; border: 1px solid #e0e0e0;
 }
 .qty-btn-group span{ padding: 8px 15px; cursor: pointer; font-weight: bold; color: var(--primary-color); }
 .qty-btn-group .qty-val{ flex-grow: 1; text-align: center; font-size: 14px; font-weight: 600; }
 
-/* --- CART STYLES --- */
+/* --- CART & CHECKOUT STYLES (Existing) --- */
 .cart-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
 .cart-item-img { width: 60px; height: 60px; object-fit: contain; border: 1px solid #eee; border-radius: 6px; margin-right: 12px; padding: 2px; }
-.cart-controls-mini { 
-    display: flex; align-items: center; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; margin-top: 5px; width: fit-content;
-}
-.cart-btn-mini { 
-    padding: 2px 10px; background: #f5f5f5; cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 16px; 
-}
-.cart-qty-mini { 
-    padding: 2px 10px; font-size: 13px; font-weight: 600; border-left: 1px solid #ccc; border-right: 1px solid #ccc; background: #fff;
-}
+.cart-controls-mini { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; margin-top: 5px; width: fit-content; }
+.cart-btn-mini { padding: 2px 10px; background: #f5f5f5; cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 16px; }
+.cart-qty-mini { padding: 2px 10px; font-size: 13px; font-weight: 600; border-left: 1px solid #ccc; border-right: 1px solid #ccc; background: #fff; }
 
-/* --- CHECKOUT MINI CART STYLES (UPDATED) --- */
 .checkout-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; }
 .checkout-img { width: 50px; height: 50px; object-fit: contain; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px; background:#fff; }
 .checkout-info { flex: 1; }
-
-/* CONTROLS VISIBLE NOW */
-.checkout-controls { 
-    display: flex; align-items: center; border: 1px solid #bbb; border-radius: 4px; 
-    width: fit-content; margin-top: 5px; background: #fff; 
-}
-.checkout-btn { 
-    padding: 4px 10px; font-weight: bold; cursor: pointer; color: var(--primary-color); 
-    background: #f9f9f9; font-size: 16px; user-select: none;
-}
-.checkout-qty { 
-    padding: 2px 10px; font-size: 13px; border-left: 1px solid #bbb; 
-    border-right: 1px solid #bbb; font-weight:600; min-width: 30px; text-align: center;
-}
-
+.checkout-controls { display: flex; align-items: center; border: 1px solid #bbb; border-radius: 4px; width: fit-content; margin-top: 5px; background: #fff; }
+.checkout-btn { padding: 4px 10px; font-weight: bold; cursor: pointer; color: var(--primary-color); background: #f9f9f9; font-size: 16px; user-select: none; }
+.checkout-qty { padding: 2px 10px; font-size: 13px; border-left: 1px solid #bbb; border-right: 1px solid #bbb; font-weight:600; min-width: 30px; text-align: center; }
 
 /* --- FORMS --- */
 .hidden{display:none !important;}
-.form-card{ 
-    background: #fff; padding: 25px 20px; border-radius: 15px; 
-    box-shadow: var(--shadow); position: relative; 
-}
+.form-card{ background: #fff; padding: 25px 20px; border-radius: 15px; box-shadow: var(--shadow); position: relative; }
 .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.close-page-btn {
-    background: #f0f0f0; width: 32px; height: 32px; border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; color: #555;
-}
-input, textarea {
-    width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e1e1e1; 
-    border-radius: 10px; background: #fcfcfc; font-size: 14px;
-}
+.close-page-btn { background: #f0f0f0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; color: #555; }
+input, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e1e1e1; border-radius: 10px; background: #fcfcfc; font-size: 14px; }
 input:focus, textarea:focus { border-color: var(--primary-color); background: #fff; outline: none; }
 
 /* --- LOCATION BUTTON --- */
-.location-btn {
-    background: #e3f2fd; color: #1976d2; 
-    border: 1px dashed #1976d2;
-    padding: 12px; width: 100%; border-radius: 10px; 
-    margin-bottom: 15px; cursor: pointer; 
-    font-weight: 600; font-size: 13px;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: 0.3s;
-}
-.location-btn:hover { background: #bbdefb; }
-.location-btn:active { transform: scale(0.98); }
+.location-btn { background: #e3f2fd; color: #1976d2; border: 1px dashed #1976d2; padding: 12px; width: 100%; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
 
 /* --- PAYMENT STYLES --- */
 .payment-tabs { display: flex; background: #f0f0f0; border-radius: 10px; padding: 5px; margin-bottom: 20px; }
 .tab-btn { flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #666; }
 .tab-btn.active-tab { background: #fff; color: var(--primary-color); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-
 .payment-methods { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-.pay-option {
-    border: 1px solid #eee; border-radius: 10px; padding: 15px 5px; text-align: center;
-    cursor: pointer; transition: 0.2s; background: #fff;
-}
+.pay-option { border: 1px solid #eee; border-radius: 10px; padding: 15px 5px; text-align: center; cursor: pointer; transition: 0.2s; background: #fff; }
 .pay-option:active { transform: scale(0.95); background: #f0fcf4; border-color: var(--primary-color); }
 .pay-logo { width: 40px; height: 40px; margin-bottom: 5px; object-fit: contain; }
 .pay-label { font-size: 11px; font-weight: bold; color: #555; display: block; }
-.total-pay-display {
-    text-align: center; font-size: 24px; font-weight: 800; color: var(--primary-color); margin: 20px 0;
-}
-.cod-box {
-    background: #e8f5e9; border: 1px dashed var(--primary-color); padding: 15px; border-radius: 10px; text-align: center; color: var(--primary-dark);
-}
+.total-pay-display { text-align: center; font-size: 24px; font-weight: 800; color: var(--primary-color); margin: 20px 0; }
+.cod-box { background: #e8f5e9; border: 1px dashed var(--primary-color); padding: 15px; border-radius: 10px; text-align: center; color: var(--primary-dark); }
 
-/* --- TIME SLOT STYLES --- */
+/* --- TIME SLOT --- */
 .slot-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-.time-slot-card {
-    padding: 15px; border: 1px solid #eee; border-radius: 10px; cursor: pointer;
-    background: #fcfcfc; text-align: left; transition: all 0.2s;
-    display: flex; justify-content: space-between; align-items: center;
-}
-.time-slot-card:hover { border-color: var(--primary-color); background: #fff; }
-.time-slot-card.selected-slot {
-    border: 2px solid var(--primary-color); background: #e0f2f1;
-}
+.time-slot-card { padding: 15px; border: 1px solid #eee; border-radius: 10px; cursor: pointer; background: #fcfcfc; text-align: left; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+.time-slot-card.selected-slot { border: 2px solid var(--primary-color); background: #e0f2f1; }
 .slot-day { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; background: #eee; padding: 3px 8px; border-radius: 4px; }
 .slot-time { font-size: 15px; font-weight: 700; color: var(--primary-dark); }
 
 /* --- SUCCESS MODAL --- */
-.success-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255,255,255,0.95); z-index: 2000;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
+.success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .checkmark { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 2; stroke: #fff; stroke-miterlimit: 10; margin: 10% auto; box-shadow: inset 0px 0px 0px #7ac142; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
 .checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #7ac142; fill: none; animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
 .checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
@@ -224,10 +259,7 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
 .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #fff; text-transform: uppercase; }
 
 /* AUTH PAGE */
-#authPage, #verifyPage {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; background: #fff; padding: 20px; z-index: 2000; position: relative;
-}
+#authPage, #verifyPage { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #fff; padding: 20px; z-index: 2000; position: relative; }
 </style>
 </head>
 <body>
@@ -253,12 +285,8 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
             <input type="password" id="authPass" placeholder="••••••••">
         </div>
         <button class="auth-btn" id="mainAuthBtn" onclick="handleLogin()">Login</button>
-        <p style="margin-top: 15px; font-size: 13px; color: #666; cursor:pointer; text-decoration:underline;" onclick="resetPassword()">
-            Forgot Password?
-        </p>
-        <p style="margin-top: 20px; font-size: 14px; color: #666;">
-            <span id="toggleText">New here? <b onclick="toggleAuthMode()" style="color:var(--primary-color); cursor:pointer;">Create Account</b></span>
-        </p>
+        <p style="margin-top: 15px; font-size: 13px; color: #666; cursor:pointer; text-decoration:underline;" onclick="resetPassword()">Forgot Password?</p>
+        <p style="margin-top: 20px; font-size: 14px; color: #666;"><span id="toggleText">New here? <b onclick="toggleAuthMode()" style="color:var(--primary-color); cursor:pointer;">Create Account</b></span></p>
         <div id="authError" style="color:red; font-size:13px; margin-top:10px;"></div>
     </div>
 </div>
@@ -289,56 +317,38 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
         <div id="productGrid"></div>
     </div>
 
+    <div id="productDetailsPage">
+        <div id="productDetailContent">
+            </div>
+    </div>
+
     <div class="container hidden" id="cartPage">
         <div class="form-card">
-            <div class="page-title">
-                <h3>🛒 Your Cart</h3>
-                <span style="font-size:12px; color:#666;">Items: <span id="cartCountInner">0</span></span>
-            </div>
+            <div class="page-title"><h3>🛒 Your Cart</h3><span style="font-size:12px; color:#666;">Items: <span id="cartCountInner">0</span></span></div>
             <div id="cartItems"></div>
-            <div style="margin-top:20px; border-top:1px dashed #ddd; padding-top:15px;">
-                <h3 id="cartTotal" style="text-align:right; margin:0;">Total: ₹0</h3>
-            </div>
+            <div style="margin-top:20px; border-top:1px dashed #ddd; padding-top:15px;"><h3 id="cartTotal" style="text-align:right; margin:0;">Total: ₹0</h3></div>
             <button class="buy-btn" style="margin-top:20px;" onclick="goToAddress('cart')">Proceed to Checkout</button>
         </div>
     </div>
 
     <div class="container hidden" id="addressPage">
         <div class="form-card">
-            <div class="page-title">
-                <h3>📍 Delivery Details</h3>
-                <span class="close-page-btn" onclick="goHome()">✕</span>
-            </div>
-            
+            <div class="page-title"><h3>📍 Delivery Details</h3><span class="close-page-btn" onclick="goHome()">✕</span></div>
             <input type="text" id="custName" placeholder="Full Name">
             <input type="number" id="custPhone" placeholder="Mobile Number">
-            
-            <div class="location-btn" onclick="detectLocation()" id="locBtn">
-                <span>📍</span> Use Current Location (GPS)
-            </div>
-
+            <div class="location-btn" onclick="detectLocation()" id="locBtn"><span>📍</span> Use Current Location (GPS)</div>
             <textarea id="custAddress" rows="3" placeholder="Full Address (House No, Area, City)"></textarea>
-            
-            <label style="display:flex; align-items:center; gap:8px; margin-top:5px; margin-bottom:15px; font-size:13px; color:#555; cursor:pointer;">
-                <input type="checkbox" id="saveAddrCheckbox" checked style="width:auto; margin:0;"> Save this address for future
-            </label>
-
+            <label style="display:flex; align-items:center; gap:8px; margin-top:5px; margin-bottom:15px; font-size:13px; color:#555; cursor:pointer;"><input type="checkbox" id="saveAddrCheckbox" checked style="width:auto; margin:0;"> Save this address for future</label>
             <hr style="border:0; border-top:1px dashed #ddd; margin: 15px 0;">
-
             <div id="checkoutItemsList"></div>
-
             <div id="checkoutBillDetails" style="margin-top: 15px; background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #ffe0b2;"></div>
-
             <button class="buy-btn" style="margin-top:20px;" onclick="goToSlotPage()">Select Delivery Time</button>
         </div>
     </div>
 
     <div class="container hidden" id="slotPage">
         <div class="form-card">
-            <div class="page-title">
-                <h3>⏰ Select Time</h3>
-                <span class="close-page-btn" onclick="goBackToAddress()">✕</span>
-            </div>
+            <div class="page-title"><h3>⏰ Select Time</h3><span class="close-page-btn" onclick="goBackToAddress()">✕</span></div>
             <p style="color:#666; font-size:14px; margin-bottom:10px;">When should we deliver?</p>
             <div id="slotsContainer" class="slot-container"></div>
             <button class="buy-btn" style="margin-top:20px;" onclick="goToPayment()">Continue to Payment</button>
@@ -347,78 +357,40 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
 
     <div class="container hidden" id="paymentPage">
         <div class="form-card">
-            <div class="page-title">
-                <h3>💳 Payment</h3>
-                <span class="close-page-btn" onclick="goToSlotPage()">✕</span>
-            </div>
-            <center>
-                <p style="color:#666; font-size:14px;">Total Amount to Pay</p>
-                <div class="total-pay-display" id="paymentTotalDisplay">₹0</div>
-            </center>
-
+            <div class="page-title"><h3>💳 Payment</h3><span class="close-page-btn" onclick="goToSlotPage()">✕</span></div>
+            <center><p style="color:#666; font-size:14px;">Total Amount to Pay</p><div class="total-pay-display" id="paymentTotalDisplay">₹0</div></center>
             <div class="payment-tabs">
                 <div class="tab-btn active-tab" id="tabOnline" onclick="togglePaymentMode('online')">Pay Online</div>
                 <div class="tab-btn" id="tabCOD" onclick="togglePaymentMode('cod')">Cash on Delivery</div>
             </div>
-
             <div id="onlineSection">
                 <p style="font-size:13px; font-weight:600; color:#333;">Select Payment Method:</p>
                 <div class="payment-methods">
-                    <div class="pay-option" onclick="startRazorpayPayment()">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" class="pay-logo">
-                        <span class="pay-label">Paytm</span>
-                    </div>
-                    <div class="pay-option" onclick="startRazorpayPayment()">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" class="pay-logo">
-                        <span class="pay-label">PhonePe</span>
-                    </div>
-                    <div class="pay-option" onclick="startRazorpayPayment()">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" class="pay-logo">
-                        <span class="pay-label">GPay / UPI</span>
-                    </div>
+                    <div class="pay-option" onclick="startRazorpayPayment()"><img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" class="pay-logo"><span class="pay-label">Paytm</span></div>
+                    <div class="pay-option" onclick="startRazorpayPayment()"><img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" class="pay-logo"><span class="pay-label">PhonePe</span></div>
+                    <div class="pay-option" onclick="startRazorpayPayment()"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" class="pay-logo"><span class="pay-label">GPay / UPI</span></div>
                 </div>
-                
                 <button class="buy-btn" style="margin-top:20px; background: #2874f0;" onclick="startRazorpayPayment()">Pay Now with Razorpay</button>
-
-                <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #777;">
-                    100% Secure Payments by Razorpay<br>
-                    UPI ID: ombk.aagz475581zewh2zrp4m@mbk
-                </div>
+                <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #777;">100% Secure Payments by Razorpay<br>UPI ID: ombk.aagz475581zewh2zrp4m@mbk</div>
             </div>
-
             <div id="codSection" class="hidden">
-                <div class="cod-box">
-                    <h3>💵 Cash on Delivery</h3>
-                    <p style="font-size:14px;">Pay cash when the product arrives at your doorstep.</p>
-                </div>
+                <div class="cod-box"><h3>💵 Cash on Delivery</h3><p style="font-size:14px;">Pay cash when the product arrives at your doorstep.</p></div>
                 <button class="buy-btn" style="margin-top:20px; background:#ff6f00;" onclick="completeOrder('COD')">Confirm COD Order</button>
             </div>
-
         </div>
     </div>
     
     <div class="container hidden" id="myOrdersPage">
         <div class="form-card" style="background:#f9f9f9;">
-            <div class="page-title">
-                <h3>📦 My Orders</h3>
-                <span class="close-page-btn" onclick="goHome()">✕</span>
-            </div>
-            
-            <div id="myOrderList" style="display:flex; flex-direction:column; gap:10px;">
-                <div class="loading-spinner">Loading your orders...</div>
-            </div>
+            <div class="page-title"><h3>📦 My Orders</h3><span class="close-page-btn" onclick="goHome()">✕</span></div>
+            <div id="myOrderList" style="display:flex; flex-direction:column; gap:10px;"><div class="loading-spinner">Loading your orders...</div></div>
         </div>
     </div>
 
     <div class="container hidden" id="adminPage">
         <div class="form-card">
-            <div class="page-title">
-                <h3>👨‍💼 Admin Panel</h3>
-                <span class="close-page-btn" onclick="goHome()">✕</span>
-            </div>
-            <div id="adminOrderList" style="display:flex; flex-direction:column; gap:10px;">
-                <div class="loading-spinner">Loading all orders...</div>
-            </div>
+            <div class="page-title"><h3>👨‍💼 Admin Panel</h3><span class="close-page-btn" onclick="goHome()">✕</span></div>
+            <div id="adminOrderList" style="display:flex; flex-direction:column; gap:10px;"><div class="loading-spinner">Loading all orders...</div></div>
         </div>
     </div>
 
@@ -436,7 +408,6 @@ input:focus, textarea:focus { border-color: var(--primary-color); background: #f
                 <strong id="menuUserEmail">user@email.com</strong>
             </div>
             <div id="adminLinkContainer"></div>
-            
             <div class="menu-item" onclick="goHome(); closeMenu();"><span class="menu-icon">🏠</span> Home</div>
             <div class="menu-item" onclick="openMyOrders(); closeMenu();"><span class="menu-icon">📦</span> My Orders</div> 
             <div class="menu-item" onclick="alert('📞 Support: 9354996087'); closeMenu();"><span class="menu-icon">📞</span> Help & Support</div>
@@ -468,7 +439,6 @@ auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
 const ADMIN_EMAIL = "ubadch89688@gmail.com"; 
 const RAZORPAY_KEY_ID = "rzp_live_S46Kk7D49BtxsN"; 
-const MERCHANT_UPI_ID = "ombk.aagz475581zewh2zrp4m@mbk";
 const MERCHANT_NAME = "Ubaid Kirana Store";
 
 let currentUser = null;
@@ -480,13 +450,53 @@ let tempOrderDetails = {};
 let selectedSlot = ""; 
 let customerLocation = null; 
 
-// PRODUCTS
+// --- UPDATED PRODUCT DESCRIPTIONS & REVIEWS ---
 const products=[
-    {id:1, name:"Tata Namak 1kg", price:28, img:"namak.jpeg.webp"},
-    {id:2, name:"Sugar 1kg", price:48, img:"41-hsMugERL._AC_UF894,1000_QL80_.jpg"},
-    {id:3, name:"Arhar Dal 1kg", price:175, img:"arhar-dal.jpg"},
-    {id:4, name:"Surf Excel 1kg", price:145, img:"619HRPW3elL._SX522_.jpg"},
-    {id:5, name:"Maggie", price:14, img:"maggi.jpg"}
+    {
+        id:1, 
+        name:"Tata Namak 1kg", 
+        price:28, 
+        img:"namak.jpeg.webp", 
+        desc:"Tata Salt is India's most trusted salt brand. Vacuum Evaporated Iodised Salt. <br><br><strong>Why choose Tata Salt?</strong><br><ul><li><strong>Vacuum Evaporated:</strong> Untouched by hand, ensuring superior hygiene.</li><li><strong>Iodine Enriched:</strong> Vital for mental development of children.</li><li><strong>Consistency:</strong> Uniform granule size for even cooking.</li><li><strong>Purity Guaranteed:</strong> 99.9% pure sodium chloride.</li></ul><br>Perfect for your daily cooking needs, ensuring taste and health in every pinch. Use it in curries, salads, and more.", 
+        rating: 4.8, 
+        reviews: 1254
+    },
+    {
+        id:2, 
+        name:"Sugar 1kg", 
+        price:48, 
+        img:"41-hsMugERL._AC_UF894,1000_QL80_.jpg", 
+        desc:"Premium quality white crystal sugar. Sulphur-free and sparkling white. <br><br><strong>Key Features:</strong><br><ul><li><strong>Double Refined:</strong> Free from sulphur and harmful chemicals.</li><li><strong>Easy Dissolve:</strong> Melts quickly in beverages like tea and coffee.</li><li><strong>Hygienically Packed:</strong> No dust or impurities, just pure sweetness.</li><li><strong>Great for Desserts:</strong> Perfect for making Mithai, Kheer, and cakes.</li></ul><br>Add sweetness to your life with our premium quality sugar.", 
+        rating: 4.5, 
+        reviews: 890
+    },
+    {
+        id:3, 
+        name:"Arhar Dal 1kg", 
+        price:175, 
+        img:"arhar-dal.jpg", 
+        desc:"Premium Unpolished Arhar (Toor) Dal. High in protein and delicious in taste. <br><br><strong>Why Buy This?</strong><br><ul><li><strong>High Protein Content:</strong> Essential for muscle growth and daily energy.</li><li><strong>Unpolished:</strong> Retains natural nutrients, fiber, and authentic taste.</li><li><strong>Sortex Cleaned:</strong> No stones, dirt, or foreign particles.</li><li><strong>Farm Fresh:</strong> Directly sourced from the best farms in India.</li></ul><br>Cooks easily and tastes delicious with steaming hot rice or roti.", 
+        rating: 4.3, 
+        reviews: 450
+    },
+    {
+        id:4, 
+        name:"Surf Excel 1kg", 
+        price:145, 
+        img:"619HRPW3elL._SX522_.jpg", 
+        desc:"Surf Excel Easy Wash Detergent Powder. Tough stain removal with ease. <br><br><strong>Product Highlights:</strong><br><ul><li><strong>Super Fine Powder:</strong> Dissolves instantly in water, leaving no residue.</li><li><strong>Powerful Stain Removal:</strong> Removes tough stains like curry, mud, oil, and ink.</li><li><strong>No Soaking Required:</strong> Saves time and water with quick action.</li><li><strong>Fresh Fragrance:</strong> Leaves clothes smelling fresh all day long.</li></ul><br>Gentle on your hands but tough on stains.", 
+        rating: 4.9, 
+        reviews: 3200
+    },
+    {
+        id:5, 
+        name:"Maggie", 
+        price:14, 
+        img:"maggi.jpg", 
+        desc:"Nestle Maggi 2-Minute Instant Noodles. India's favorite snack. <br><br><strong>Details:</strong><br><ul><li><strong>Classic Masala Taste:</strong> Comes with the favorite masala tastemaker everyone loves.</li><li><strong>Iron Fortified:</strong> A good source of Iron for your daily diet.</li><li><strong>Quick Snack:</strong> Ready to eat in just 2 minutes of cooking.</li><li><strong>Versatile:</strong> Add veggies, eggs, or cheese for a wholesome meal.</li></ul><br>Perfect for hunger pangs at any time of the day.", 
+        rating: 4.7, 
+        reviews: 5600
+    }
 ];
 
 // --- AUTH LOGIC ---
@@ -522,12 +532,9 @@ let userProfileData = {};
 function loadUserProfile(){
     if(!currentUser) return;
     db.collection("users").doc(currentUser.email).get().then(doc => {
-        if(doc.exists) {
-            userProfileData = doc.data();
-        }
+        if(doc.exists) userProfileData = doc.data();
     });
 }
-
 function loadUserCart() {
     const savedCart = localStorage.getItem('cart_' + currentUser.email);
     cart = savedCart ? JSON.parse(savedCart) : {};
@@ -574,8 +581,6 @@ function handleLogout() {
     cart = {}; updateCartDisplay();
     auth.signOut().then(() => location.reload());
 }
-
-// --- MENU & UI ---
 function setupMenu() {
     document.getElementById("menuUserEmail").innerText = currentUser.email;
     if (currentUser.email === ADMIN_EMAIL) {
@@ -592,15 +597,26 @@ function highlightNav(el) {
     el.classList.add("active");
 }
 
-// --- STORE LOGIC ---
+// --- STORE LOGIC & PRODUCTS ---
 function displayProducts(){
     const grid=document.getElementById("productGrid");
     grid.innerHTML=products.map(p => {
         const cartItem = cart[p.id];
+        // Note: onclick is strictly on the IMG now
         return `
         <div class="product-item">
-            <img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/150?text=Product'">
-            <div class="product-details"><b>${p.name}</b><div>₹${p.price}</div></div>
+            <div style="position:relative">
+                <img src="${p.img}" class="product-img" onclick="openProductDetails(${p.id})" onerror="this.src='https://via.placeholder.com/200?text=Product'">
+            </div>
+            <div class="product-details">
+                <b>${p.name}</b>
+                <div class="rating-row">
+                    <div class="rating-badge">${p.rating} ★</div>
+                    <span class="rating-count">(${p.reviews})</span>
+                    <div class="f-assured"><img src="u_fire_logo.jpg" alt="U" onerror="this.style.display='none'"><span class="f-assured-text">Assured</span></div>
+                </div>
+                <div class="product-desc-text">${p.desc.split('<br>')[0]}</div> <div class="price-tag">₹${p.price}</div>
+            </div>
             <div class="btn-group">
                 ${cartItem ? 
                 `<div class="qty-btn-group"><span onclick="updateQty(${p.id}, -1)">−</span><span class="qty-val">${cartItem.qty}</span><span onclick="updateQty(${p.id}, 1)">+</span></div>` : 
@@ -610,34 +626,124 @@ function displayProducts(){
         </div>`;
     }).join("");
 }
+
+// --- NEW PRODUCT DETAILS LOGIC ---
+function openProductDetails(id) {
+    const p = products.find(x => x.id === id);
+    if(!p) return;
+    
+    const cartItem = cart[p.id];
+    
+    // Logic for Related Products (Exclude current item, take 4 others)
+    let relatedHtml = products.filter(x => x.id !== id).slice(0, 4).map(r => `
+        <div class="rel-card" onclick="openProductDetails(${r.id})">
+            <img src="${r.img}" class="rel-img" onerror="this.src='https://via.placeholder.com/100?text=Product'">
+            <div class="rel-name">${r.name}</div>
+            <div class="rel-price">₹${r.price}</div>
+        </div>
+    `).join("");
+
+    // Inject HTML into the detail content div
+    document.getElementById("productDetailContent").innerHTML = `
+        <div class="pd-header">
+            <span class="pd-back" onclick="closeProductDetails()">←</span>
+            <span class="pd-title-top">Product Details</span>
+        </div>
+        
+        <div class="pd-scroll-content">
+            <div class="pd-image-box">
+                <img src="${p.img}" class="pd-image" onerror="this.src='https://via.placeholder.com/400?text=Product'">
+            </div>
+
+            <div class="pd-main-title">${p.name}</div>
+            
+            <div class="rating-row">
+                <div class="rating-badge" style="font-size:13px; padding:4px 8px;">${p.rating} ★</div>
+                <span class="rating-count" style="font-size:13px;">(${p.reviews} Ratings)</span>
+                <div class="f-assured"><img src="u_fire_logo.jpg" style="height:16px"><span class="f-assured-text">Assured</span></div>
+            </div>
+
+            <div class="pd-price">₹${p.price}</div>
+
+            <div class="pd-desc-box">
+                <div class="pd-label">Description</div>
+                <div class="pd-text">${p.desc}</div>
+            </div>
+
+            <div class="pd-desc-box">
+                <div class="pd-label">Ratings & Reviews</div>
+                <div style="margin-bottom:10px;">
+                    <span style="font-size:24px; font-weight:bold;">${p.rating}</span> <span style="color:green;">★</span>
+                    <span style="font-size:12px; color:#666;">Based on ${p.reviews} verified reviews</span>
+                </div>
+                
+                <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+                    <div style="font-size:13px; font-weight:bold;">Amit Kumar <span style="background:green; color:white; padding:1px 4px; border-radius:3px; font-size:10px;">5★</span></div>
+                    <div style="font-size:13px; color:#555; margin-top:3px;">Best quality product. Delivered on time.</div>
+                </div>
+                <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+                    <div style="font-size:13px; font-weight:bold;">Rahul Singh <span style="background:green; color:white; padding:1px 4px; border-radius:3px; font-size:10px;">5★</span></div>
+                    <div style="font-size:13px; color:#555; margin-top:3px;">Fresh and original. Very happy with Ubaid Store.</div>
+                </div>
+                 <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+                    <div style="font-size:13px; font-weight:bold;">Priya S. <span style="background:#388e3c; color:white; padding:1px 4px; border-radius:3px; font-size:10px;">4★</span></div>
+                    <div style="font-size:13px; color:#555; margin-top:3px;">Good packing but delivery took 1 hour.</div>
+                </div>
+            </div>
+
+            <div class="related-section">
+                <div class="related-header">You might also like</div>
+                <div class="related-grid">
+                    ${relatedHtml}
+                </div>
+            </div>
+
+            <div class="pd-badges">
+                <span class="badge-pill b-assured">🛡️ Ubaid Assured</span>
+                <span class="badge-pill b-cod">🚚 Cash on Delivery Available</span>
+                <span class="badge-pill b-fresh">🍃 Fresh Product</span>
+            </div>
+        </div>
+
+        <div class="pd-footer-actions">
+            ${cartItem ? 
+                `<div class="qty-btn-group" style="flex:1"><span onclick="updateQty(${p.id}, -1)">−</span><span class="qty-val">${cartItem.qty}</span><span onclick="updateQty(${p.id}, 1)">+</span></div>` : 
+                `<button class="add-btn" style="flex:1" onclick="updateQty(${p.id}, 1)">ADD TO CART</button>`
+            }
+            <button class="buy-btn" style="flex:1" onclick="buyNow(${p.id})">BUY NOW</button>
+        </div>
+    `;
+
+    // Show the page
+    document.getElementById("productDetailsPage").classList.add("active");
+}
+
+function closeProductDetails() {
+    document.getElementById("productDetailsPage").classList.remove("active");
+    // Refresh main grid in case quantities changed
+    displayProducts();
+    updateCartDisplay();
+}
+
+function updateQtyFromDetails(id) {
+    // If user clicks "IN CART" button inside details page, take them to cart
+    closeProductDetails();
+    openCart();
+}
+
+// -- EXISTING CART LOGIC ---
 function updateQty(id, change) {
     const product = products.find(p => p.id === id);
     if (!cart[id]) cart[id] = { ...product, qty: 0 };
     cart[id].qty += change;
     if (cart[id].qty <= 0) delete cart[id];
-    saveUserCart(); updateCartDisplay(); displayProducts();
-}
-
-// FIXED: Update Qty from Checkout/Direct Buy
-function updateQtyCheckout(id, change) {
-    if (checkoutMode === 'cart') {
-        // Normal Cart Logic
-        updateQty(id, change);
-        if (Object.keys(cart).length === 0) {
-            goHome();
-        } else {
-            goToAddress('cart', true);
-        }
-    } else {
-        // Direct Buy Logic - Update local array only
-        if(directPurchaseItem && directPurchaseItem.length > 0 && directPurchaseItem[0].id === id) {
-            directPurchaseItem[0].qty += change;
-            if(directPurchaseItem[0].qty <= 0) {
-                goHome(); // Back to home if 0
-            } else {
-                goToAddress('direct', true); // Refresh checkout
-            }
-        }
+    saveUserCart(); 
+    updateCartDisplay(); 
+    displayProducts();
+    
+    // If the details page is open, refresh it to show updated button state
+    if(document.getElementById("productDetailsPage").classList.contains("active")){
+        openProductDetails(id);
     }
 }
 
@@ -661,19 +767,11 @@ function updateCartDisplay(){
             <div style="font-weight:bold; font-size:15px; margin-left:10px;">₹${item.price * item.qty}</div>
         </div>`;
     });
-
-    let deliveryCharge = 0;
-    let deliveryText = "<span style='color:green'>Free</span>";
-    if (subTotal > 0 && subTotal < 199) {
-        deliveryCharge = 20;
-        deliveryText = "₹20";
-    }
-
+    let deliveryCharge = (subTotal > 0 && subTotal < 199) ? 20 : 0;
+    let deliveryText = (deliveryCharge > 0) ? "₹20" : "<span style='color:green'>Free</span>";
     let finalTotal = subTotal + deliveryCharge;
-    if(subTotal > 0) {
-        html += `<div style="display:flex;justify-content:space-between;align-items:center; padding:10px 0; border-bottom:1px solid #eee; color:#666;">
-            <div style="font-size:14px;">Delivery Charge</div><b>${deliveryText}</b></div>`;
-    }
+    
+    if(subTotal > 0) html += `<div style="display:flex;justify-content:space-between;align-items:center; padding:10px 0; border-bottom:1px solid #eee; color:#666;"><div style="font-size:14px;">Delivery Charge</div><b>${deliveryText}</b></div>`;
 
     document.getElementById("cartCountBadge").innerText = totalItems;
     document.getElementById("cartCountInner").innerText = totalItems;
@@ -681,18 +779,18 @@ function updateCartDisplay(){
     document.getElementById("cartTotal").innerText = "Total Pay: ₹" + finalTotal;
 }
 
-// FIXED: Buy Now checks cart first
 function buyNow(id){
     let item = cart[id];
-    // If item is in cart, use that qty. Else start with 1.
     let qty = item ? item.qty : 1;
-    
     directPurchaseItem = [{ ...products.find(p => p.id === id), qty: qty }];
+    closeProductDetails(); // Close details if open
     goToAddress('direct');
 }
 
 function hideAll(){
     ["shopPage","cartPage","addressPage","slotPage","paymentPage","myOrdersPage","adminPage"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+    // Also ensure product details is closed
+    document.getElementById("productDetailsPage").classList.remove("active");
 }
 function goHome(){ 
     hideAll(); document.getElementById("shopPage").classList.remove("hidden"); highlightNav(document.getElementById("navHomeBtn")); displayProducts();
@@ -707,54 +805,34 @@ function goToAddress(mode, isRefresh = false){
     if(!items || !items.length) return alert("Cart is empty!");
     
     let itemTotal = items.reduce((s,i)=>s+(i.price*i.qty),0);
-    
     let deliveryCharge = (itemTotal < 199) ? 20 : 0;
     let finalTotal = itemTotal + deliveryCharge;
     
-    // FIXED: +/- Buttons now appear for BOTH 'cart' and 'direct' modes
     let itemsHtml = items.map(i => `
         <div class="checkout-item">
             <img src="${i.img}" class="checkout-img" onerror="this.src='https://via.placeholder.com/50?text=Item'">
             <div class="checkout-info">
                 <div style="font-size:13px; font-weight:600;">${i.name}</div>
                 <div style="font-size:12px; color:#666;">₹${i.price}</div>
-                
                 <div class="checkout-controls">
                     <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, -1)">−</div>
                     <div class="checkout-qty">${i.qty}</div>
                     <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, 1)">+</div>
                 </div>
-                
             </div>
             <div style="font-weight:bold; font-size:14px; margin-left:8px;">₹${i.price * i.qty}</div>
         </div>
     `).join("");
 
-    document.getElementById("checkoutItemsList").innerHTML = `
-        <h4 style="margin:0 0 10px 0; color:#444;">🛒 Your Basket</h4>
-        ${itemsHtml}
-    `;
-
-    let deliveryText = (deliveryCharge === 0) 
-        ? `<span style="color:green; font-weight:bold;">FREE</span>` 
-        : `<span style="color:red; font-weight:bold;">₹20</span>`;
-
-    let freeDelNote = (itemTotal < 199)
-        ? `<div style="font-size:11px; color:#d32f2f; margin-top:5px;">⚠️ Add items worth ₹${199 - itemTotal} more for FREE Delivery!</div>`
-        : `<div style="font-size:11px; color:green; margin-top:5px;">✅ Free Delivery Applied (Orders > ₹199)</div>`;
+    document.getElementById("checkoutItemsList").innerHTML = `<h4 style="margin:0 0 10px 0; color:#444;">🛒 Your Basket</h4>${itemsHtml}`;
+    let deliveryText = (deliveryCharge === 0) ? `<span style="color:green; font-weight:bold;">FREE</span>` : `<span style="color:red; font-weight:bold;">₹20</span>`;
+    let freeDelNote = (itemTotal < 199) ? `<div style="font-size:11px; color:#d32f2f; margin-top:5px;">⚠️ Add items worth ₹${199 - itemTotal} more for FREE Delivery!</div>` : `<div style="font-size:11px; color:green; margin-top:5px;">✅ Free Delivery Applied (Orders > ₹199)</div>`;
 
     document.getElementById("checkoutBillDetails").innerHTML = `
-        <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:5px;">
-            <span>Item Total</span> <b>₹${itemTotal}</b>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:16px; margin-bottom:10px;">
-            <span>Delivery Charge</span> ${deliveryText}
-        </div>
+        <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:5px;"><span>Item Total</span> <b>₹${itemTotal}</b></div>
+        <div style="display:flex; justify-content:space-between; font-size:16px; margin-bottom:10px;"><span>Delivery Charge</span> ${deliveryText}</div>
         <hr style="border-top:1px dashed #aaa;">
-        <div style="display:flex; justify-content:space-between; font-size:20px; color:var(--primary-color); margin-top:5px;">
-            <strong>TOTAL TO PAY</strong> 
-            <strong>₹${finalTotal}</strong>
-        </div>
+        <div style="display:flex; justify-content:space-between; font-size:20px; color:var(--primary-color); margin-top:5px;"><strong>TOTAL TO PAY</strong> <strong>₹${finalTotal}</strong></div>
         <div style="text-align:center; margin-top:8px;">${freeDelNote}</div>
     `;
     
@@ -762,361 +840,151 @@ function goToAddress(mode, isRefresh = false){
         hideAll(); 
         document.getElementById("addressPage").classList.remove("hidden"); 
         if(userProfileData) {
-            if(userProfileData.name && !document.getElementById("custName").value) 
-                document.getElementById("custName").value = userProfileData.name;
-            if(userProfileData.phone && !document.getElementById("custPhone").value) 
-                document.getElementById("custPhone").value = userProfileData.phone;
-            if(userProfileData.address && !document.getElementById("custAddress").value) 
-                document.getElementById("custAddress").value = userProfileData.address;
+            if(userProfileData.name && !document.getElementById("custName").value) document.getElementById("custName").value = userProfileData.name;
+            if(userProfileData.phone && !document.getElementById("custPhone").value) document.getElementById("custPhone").value = userProfileData.phone;
+            if(userProfileData.address && !document.getElementById("custAddress").value) document.getElementById("custAddress").value = userProfileData.address;
         }
     }
 }
-
-function goBackToAddress(){
-    hideAll(); document.getElementById("addressPage").classList.remove("hidden");
+function updateQtyCheckout(id, change) {
+    if (checkoutMode === 'cart') {
+        updateQty(id, change);
+        if (Object.keys(cart).length === 0) goHome(); else goToAddress('cart', true);
+    } else {
+        if(directPurchaseItem && directPurchaseItem.length > 0 && directPurchaseItem[0].id === id) {
+            directPurchaseItem[0].qty += change;
+            if(directPurchaseItem[0].qty <= 0) goHome(); else goToAddress('direct', true);
+        }
+    }
 }
+function goBackToAddress(){ hideAll(); document.getElementById("addressPage").classList.remove("hidden"); }
 
-// --- LOCATION FUNCTION ---
+// --- LOCATION ---
 function detectLocation() {
     const btn = document.getElementById("locBtn");
     const addressBox = document.getElementById("custAddress");
     if (!navigator.geolocation) return alert("Geolocation not supported");
-
     btn.innerHTML = "<span>🛰️</span> Locating...";
-    
     navigator.geolocation.getCurrentPosition(async (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+        const lat = position.coords.latitude; const lon = position.coords.longitude;
         customerLocation = { lat: lat, lng: lon }; 
-
         try {
             const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if(data && data.display_name) {
-                addressBox.value = data.display_name;
-                btn.innerHTML = "<span>✅</span> Location Detected!";
-            }
-        } catch (error) {
-            addressBox.value = `Lat: ${lat}, Lon: ${lon} (Please add details)`;
-        }
+            const response = await fetch(url); const data = await response.json();
+            if(data && data.display_name) { addressBox.value = data.display_name; btn.innerHTML = "<span>✅</span> Location Detected!"; }
+        } catch (error) { addressBox.value = `Lat: ${lat}, Lon: ${lon} (Please add details)`; }
         setTimeout(() => { btn.innerHTML = "<span>📍</span> Use Current Location (GPS)"; }, 3000);
-    }, (error) => {
-        alert("Location error: " + error.message);
-        btn.innerHTML = "<span>📍</span> Use Current Location (GPS)";
-    });
+    }, (error) => { alert("Location error: " + error.message); btn.innerHTML = "<span>📍</span> Use Current Location (GPS)"; });
 }
 
-// --- TIME SLOT LOGIC ---
+// --- SLOT ---
 function goToSlotPage() {
     const name = document.getElementById("custName").value;
     const phone = document.getElementById("custPhone").value;
     const address = document.getElementById("custAddress").value;
     const saveAddr = document.getElementById("saveAddrCheckbox").checked; 
-
     if(!name || !phone || !address) return alert("Please fill Name, Phone, and Address first!");
 
     if(saveAddr) {
-        db.collection("users").doc(currentUser.email).set({
-            name: name, phone: phone, address: address
-        }, { merge: true }).then(() => {
-            userProfileData = { name, phone, address };
-        });
+        db.collection("users").doc(currentUser.email).set({ name: name, phone: phone, address: address }, { merge: true }).then(() => { userProfileData = { name, phone, address }; });
     }
-
     tempOrderDetails = { name, phone, address };
     const items = (checkoutMode === 'cart') ? Object.values(cart) : directPurchaseItem;
     const itemTotal = items.reduce((s,i)=>s+(i.price*i.qty),0);
     const deliveryCharge = (itemTotal < 199) ? 20 : 0;
-    const finalTotal = itemTotal + deliveryCharge;
-
-    tempOrderDetails.itemTotal = itemTotal;
-    tempOrderDetails.deliveryCharge = deliveryCharge;
-    tempOrderDetails.total = finalTotal;
-    tempOrderDetails.items = items;
+    tempOrderDetails.itemTotal = itemTotal; tempOrderDetails.deliveryCharge = deliveryCharge; tempOrderDetails.total = itemTotal + deliveryCharge; tempOrderDetails.items = items;
 
     generateSlots(); 
     hideAll();
     document.getElementById("slotPage").classList.remove("hidden");
 }
-
 function generateSlots() {
-    const container = document.getElementById("slotsContainer");
-    container.innerHTML = "";
-    selectedSlot = ""; 
-    const now = new Date();
-    const currentHour = now.getHours(); 
-    
-    const slots = [
-        { label: "10:00 AM - 12:00 PM", cutoff: 9 },  
-        { label: "01:00 PM - 03:00 PM", cutoff: 12 }, 
-        { label: "05:00 PM - 07:00 PM", cutoff: 17 }  
-    ];
-
-    let availableSlots = [];
-    let isTomorrow = false;
-    if (currentHour >= 17) {
-        isTomorrow = true;
-        availableSlots = slots; 
-    } else {
-        availableSlots = slots.filter(s => currentHour < s.cutoff);
-        if(availableSlots.length === 0) {
-            isTomorrow = true;
-            availableSlots = slots;
-        }
-    }
+    const container = document.getElementById("slotsContainer"); container.innerHTML = ""; selectedSlot = ""; 
+    const now = new Date(); const currentHour = now.getHours(); 
+    const slots = [{ label: "10:00 AM - 12:00 PM", cutoff: 9 }, { label: "01:00 PM - 03:00 PM", cutoff: 12 }, { label: "05:00 PM - 07:00 PM", cutoff: 17 }];
+    let availableSlots = []; let isTomorrow = false;
+    if (currentHour >= 17) { isTomorrow = true; availableSlots = slots; } else { availableSlots = slots.filter(s => currentHour < s.cutoff); if(availableSlots.length === 0) { isTomorrow = true; availableSlots = slots; } }
     const dayText = isTomorrow ? "TOMORROW" : "TODAY";
-    
     availableSlots.forEach(slot => {
-        const div = document.createElement("div");
-        div.className = "time-slot-card";
-        div.innerHTML = `<span class="slot-time">${slot.label}</span> <span class="slot-day">${dayText}</span>`;
-        div.onclick = () => {
-            document.querySelectorAll(".time-slot-card").forEach(e => e.classList.remove("selected-slot"));
-            div.classList.add("selected-slot");
-            selectedSlot = `${dayText} (${slot.label})`;
-        };
+        const div = document.createElement("div"); div.className = "time-slot-card"; div.innerHTML = `<span class="slot-time">${slot.label}</span> <span class="slot-day">${dayText}</span>`;
+        div.onclick = () => { document.querySelectorAll(".time-slot-card").forEach(e => e.classList.remove("selected-slot")); div.classList.add("selected-slot"); selectedSlot = `${dayText} (${slot.label})`; };
         container.appendChild(div);
     });
 }
 
-// --- PAYMENT LOGIC ---
+// --- PAYMENT ---
 function goToPayment(){
     if(!selectedSlot) return alert("Please select a delivery time slot!");
-    tempOrderDetails.deliverySlot = selectedSlot;
-    hideAll();
-    document.getElementById("paymentPage").classList.remove("hidden");
-    document.getElementById("paymentTotalDisplay").innerText = "₹" + tempOrderDetails.total;
-    togglePaymentMode('online');
+    tempOrderDetails.deliverySlot = selectedSlot; hideAll(); document.getElementById("paymentPage").classList.remove("hidden");
+    document.getElementById("paymentTotalDisplay").innerText = "₹" + tempOrderDetails.total; togglePaymentMode('online');
 }
-
 function togglePaymentMode(mode) {
-    const onlineSec = document.getElementById("onlineSection");
-    const codSec = document.getElementById("codSection");
-    const tabOnline = document.getElementById("tabOnline");
-    const tabCOD = document.getElementById("tabCOD");
-
-    if(mode === 'online') {
-        onlineSec.classList.remove("hidden");
-        codSec.classList.add("hidden");
-        tabOnline.classList.add("active-tab");
-        tabCOD.classList.remove("active-tab");
-    } else {
-        onlineSec.classList.add("hidden");
-        codSec.classList.remove("hidden");
-        tabOnline.classList.remove("active-tab");
-        tabCOD.classList.add("active-tab");
-    }
+    const onlineSec = document.getElementById("onlineSection"); const codSec = document.getElementById("codSection");
+    const tabOnline = document.getElementById("tabOnline"); const tabCOD = document.getElementById("tabCOD");
+    if(mode === 'online') { onlineSec.classList.remove("hidden"); codSec.classList.add("hidden"); tabOnline.classList.add("active-tab"); tabCOD.classList.remove("active-tab"); } else { onlineSec.classList.add("hidden"); codSec.classList.remove("hidden"); tabOnline.classList.remove("active-tab"); tabCOD.classList.add("active-tab"); }
 }
-
-// ** RAZORPAY FUNCTION **
 function startRazorpayPayment() {
     if (!tempOrderDetails.total) return alert("Invalid Amount");
-
     var options = {
-        "key": RAZORPAY_KEY_ID, 
-        "amount": tempOrderDetails.total * 100, 
-        "currency": "INR",
-        "name": MERCHANT_NAME,
-        "description": "Order Payment",
-        "image": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png", 
-        "handler": function (response) {
-            completeOrder('ONLINE', response.razorpay_payment_id);
-        },
-        "prefill": {
-            "name": tempOrderDetails.name,
-            "email": currentUser.email,
-            "contact": tempOrderDetails.phone
-        },
-        "notes": {
-            "address": tempOrderDetails.address,
-            "slot": tempOrderDetails.deliverySlot
-        },
-        "theme": {
-            "color": "#008060"
-        }
+        "key": RAZORPAY_KEY_ID, "amount": tempOrderDetails.total * 100, "currency": "INR", "name": MERCHANT_NAME, "description": "Order Payment", "image": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png", 
+        "handler": function (response) { completeOrder('ONLINE', response.razorpay_payment_id); },
+        "prefill": { "name": tempOrderDetails.name, "email": currentUser.email, "contact": tempOrderDetails.phone },
+        "notes": { "address": tempOrderDetails.address, "slot": tempOrderDetails.deliverySlot }, "theme": { "color": "#008060" }
     };
-
-    var rzp1 = new Razorpay(options);
-    rzp1.on('payment.failed', function (response){
-        alert("Payment Failed: " + response.error.description);
-    });
-    rzp1.open();
+    var rzp1 = new Razorpay(options); rzp1.on('payment.failed', function (response){ alert("Payment Failed: " + response.error.description); }); rzp1.open();
 }
-
 function completeOrder(method, txnId){
     const payStatus = (method === 'COD') ? "Pending (COD)" : "PAID (Online)";
     const orderStatus = (method === 'COD') ? "Pending" : "Confirmed"; 
     const finalMethod = (method === 'ONLINE') ? `Online (ID: ${txnId || 'NA'})` : method;
-
     db.collection("orders").add({
-        userEmail: currentUser.email,
-        name: tempOrderDetails.name,
-        phone: tempOrderDetails.phone,
-        address: tempOrderDetails.address,
-        gpsLocation: customerLocation || null, 
-        deliverySlot: tempOrderDetails.deliverySlot, 
-        items: tempOrderDetails.items,
-        itemTotal: tempOrderDetails.itemTotal,
-        deliveryCharge: tempOrderDetails.deliveryCharge,
-        total: tempOrderDetails.total,
-        orderType: checkoutMode,
-        paymentMethod: finalMethod,
-        paymentStatus: payStatus,
-        status: orderStatus,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        userEmail: currentUser.email, name: tempOrderDetails.name, phone: tempOrderDetails.phone, address: tempOrderDetails.address, gpsLocation: customerLocation || null, deliverySlot: tempOrderDetails.deliverySlot, items: tempOrderDetails.items, itemTotal: tempOrderDetails.itemTotal, deliveryCharge: tempOrderDetails.deliveryCharge, total: tempOrderDetails.total, orderType: checkoutMode, paymentMethod: finalMethod, paymentStatus: payStatus, status: orderStatus, createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(()=>{
-        if(checkoutMode === 'cart'){ 
-            cart={}; saveUserCart(); updateCartDisplay(); 
-        }
-        document.getElementById("paymentPage").classList.add("hidden");
-        document.getElementById("successOverlay").classList.remove("hidden");
-        customerLocation = null;
+        if(checkoutMode === 'cart'){ cart={}; saveUserCart(); updateCartDisplay(); }
+        document.getElementById("paymentPage").classList.add("hidden"); document.getElementById("successOverlay").classList.remove("hidden"); customerLocation = null;
     }).catch(e => alert(e.message));
 }
+function closeSuccess(){ document.getElementById("successOverlay").classList.add("hidden"); goHome(); }
 
-function closeSuccess(){
-    document.getElementById("successOverlay").classList.add("hidden");
-    goHome();
-}
-
-// --- ADDED: MY ORDERS & UTILS ---
-function openMyOrders(){
-    hideAll(); document.getElementById("myOrdersPage").classList.remove("hidden"); 
-}
-
-// --- ADMIN & ORDERS LOGIC ---
-function openAdmin(){
-    if(currentUser.email !== ADMIN_EMAIL) return alert("Access Denied!");
-    hideAll(); 
-    document.getElementById("adminPage").classList.remove("hidden");
-    loadAdminOrders();
-}
-
+// --- ADMIN & ORDERS ---
+function openAdmin(){ if(currentUser.email !== ADMIN_EMAIL) return alert("Access Denied!"); hideAll(); document.getElementById("adminPage").classList.remove("hidden"); loadAdminOrders(); }
+function openMyOrders(){ hideAll(); document.getElementById("myOrdersPage").classList.remove("hidden"); }
 function loadAdminOrders(){
-  const list = document.getElementById("adminOrderList");
-  list.innerHTML = "<div class='loading-spinner' style='padding:20px;text-align:center;'>Loading Orders...</div>";
+  const list = document.getElementById("adminOrderList"); list.innerHTML = "<div class='loading-spinner' style='padding:20px;text-align:center;'>Loading Orders...</div>";
   db.collection("orders").limit(50).onSnapshot(snapshot=>{
-    let orders = [];
-    snapshot.forEach(doc => {
-        orders.push({id: doc.id, ...doc.data()});
-    });
-    orders.sort((a,b) => {
-        let t1 = a.createdAt ? a.createdAt.seconds : 0;
-        let t2 = b.createdAt ? b.createdAt.seconds : 0;
-        return t2 - t1; 
-    });
-    let html = "";
-    orders.forEach(o => { html += renderOrderCard(o, true); });
-    list.innerHTML = html || "<div style='text-align:center; padding:20px'>No orders found.</div>";
+    let orders = []; snapshot.forEach(doc => { orders.push({id: doc.id, ...doc.data()}); });
+    orders.sort((a,b) => { let t1 = a.createdAt ? a.createdAt.seconds : 0; let t2 = b.createdAt ? b.createdAt.seconds : 0; return t2 - t1; });
+    let html = ""; orders.forEach(o => { html += renderOrderCard(o, true); }); list.innerHTML = html || "<div style='text-align:center; padding:20px'>No orders found.</div>";
   });
 }
-
 function loadCustomerOrders(){
-    const list = document.getElementById("myOrderList");
-    if(list.innerHTML.trim() === "") list.innerHTML = "<div class='loading-spinner'>Loading your orders...</div>";
-    db.collection("orders").limit(50)
-    .onSnapshot(snapshot => {
-        if(snapshot.empty) {
-            list.innerHTML = "<p style='text-align:center'>Database is empty (No orders at all)</p>";
-            return;
-        }
-        let orders = [];
-        let myOrdersCount = 0;
-        snapshot.forEach(doc => { 
-            let data = doc.data();
-            if(data.userEmail === currentUser.email) {
-                 orders.push({id: doc.id, ...data});
-                 myOrdersCount++;
-            }
-        });
-        if(myOrdersCount === 0) {
-             list.innerHTML = "<p style='text-align:center; padding:20px'>You haven't placed any orders yet.</p>";
-             return;
-        }
+    const list = document.getElementById("myOrderList"); if(list.innerHTML.trim() === "") list.innerHTML = "<div class='loading-spinner'>Loading your orders...</div>";
+    db.collection("orders").limit(50).onSnapshot(snapshot => {
+        if(snapshot.empty) { list.innerHTML = "<p style='text-align:center'>Database is empty (No orders at all)</p>"; return; }
+        let orders = []; let myOrdersCount = 0;
+        snapshot.forEach(doc => { let data = doc.data(); if(data.userEmail === currentUser.email) { orders.push({id: doc.id, ...data}); myOrdersCount++; } });
+        if(myOrdersCount === 0) { list.innerHTML = "<p style='text-align:center; padding:20px'>You haven't placed any orders yet.</p>"; return; }
         orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        let html=""; 
-        orders.forEach(o => { html += renderOrderCard(o, false); });
-        list.innerHTML = html;
-    }, (error) => {
-        list.innerHTML = `<p style="color:red; text-align:center;">Error: ${error.message}</p>`;
+        let html=""; orders.forEach(o => { html += renderOrderCard(o, false); }); list.innerHTML = html;
     });
 }
-
 function renderOrderCard(o, isAdmin) {
-    let color = '#ff9800'; 
-    if(o.status === 'Confirmed') color = '#2196f3';
-    if(o.status === 'Delivered') color = '#4caf50';
-    let pm = o.paymentMethod || '';
-    if(pm.includes('COD')) color = '#795548'; 
-
+    let color = '#ff9800'; if(o.status === 'Confirmed') color = '#2196f3'; if(o.status === 'Delivered') color = '#4caf50';
+    let pm = o.paymentMethod || ''; if(pm.includes('COD')) color = '#795548'; 
     let dateStr = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString() : 'Just now';
-    
-    let itemsHtml = '';
-    if (o.items && Array.isArray(o.items)) {
-        itemsHtml = o.items.map(i => `<div style="font-size:12px; display:flex; justify-content:space-between;"><span>${i.name} x${i.qty}</span><span>₹${i.price * i.qty}</span></div>`).join("");
-    }
-    let deliveryRow = "";
-    if(o.deliveryCharge && o.deliveryCharge > 0) {
-        deliveryRow = `<div style="font-size:12px; display:flex; justify-content:space-between; color:#d32f2f;"><span>Delivery Charge</span><span>₹${o.deliveryCharge}</span></div>`;
-    }
-    let mapLink = "";
-    if(isAdmin && o.gpsLocation && o.gpsLocation.lat && o.gpsLocation.lng) {
-        const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${o.gpsLocation.lat},${o.gpsLocation.lng}`;
-        mapLink = `<a href="${googleMapsUrl}" target="_blank" style="display:inline-block; margin-top:5px; color:#fff; background:#4285F4; padding:3px 8px; border-radius:4px; text-decoration:none; font-size:11px;">🗺️ Open Map</a>`;
-    }
+    let itemsHtml = ''; if (o.items && Array.isArray(o.items)) { itemsHtml = o.items.map(i => `<div style="font-size:12px; display:flex; justify-content:space-between;"><span>${i.name} x${i.qty}</span><span>₹${i.price * i.qty}</span></div>`).join(""); }
+    let deliveryRow = ""; if(o.deliveryCharge && o.deliveryCharge > 0) { deliveryRow = `<div style="font-size:12px; display:flex; justify-content:space-between; color:#d32f2f;"><span>Delivery Charge</span><span>₹${o.deliveryCharge}</span></div>`; }
+    let mapLink = ""; if(isAdmin && o.gpsLocation && o.gpsLocation.lat && o.gpsLocation.lng) { const googleMapsUrl = `http://maps.google.com/maps?q=${o.gpsLocation.lat},${o.gpsLocation.lng}`; mapLink = `<a href="${googleMapsUrl}" target="_blank" style="display:inline-block; margin-top:5px; color:#fff; background:#4285F4; padding:3px 8px; border-radius:4px; text-decoration:none; font-size:11px;">🗺️ Open Map</a>`; }
     let adminControls = "";
     if (isAdmin) {
-        let nextStatus = "";
-        let btnLabel = "";
-        let btnBg = "";
-        if(o.status === "Pending") { 
-            nextStatus = "Confirmed"; btnLabel = "✅ Accept"; btnBg = "#2e7d32"; 
-        } else if(o.status === "Confirmed") { 
-            nextStatus = "Delivered"; btnLabel = "🚚 Deliver"; btnBg = "#1976d2"; 
-        } else { 
-            nextStatus = "Pending"; btnLabel = "↩ Reset"; btnBg = "#555"; 
-        }
-        adminControls = `
-        <div style="margin-top:10px; padding-top:10px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:12px">📞 <a href="tel:${o.phone}" style="color:blue;text-decoration:none;">${o.phone}</a></span>
-            <button onclick="updateStatus('${o.id}','${nextStatus}')" style="background:${btnBg}; color:#fff; border:none; border-radius:4px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:bold;">${btnLabel}</button>
-        </div>`;
+        let nextStatus = "", btnLabel = "", btnBg = "";
+        if(o.status === "Pending") { nextStatus = "Confirmed"; btnLabel = "✅ Accept"; btnBg = "#2e7d32"; } else if(o.status === "Confirmed") { nextStatus = "Delivered"; btnLabel = "🚚 Deliver"; btnBg = "#1976d2"; } else { nextStatus = "Pending"; btnLabel = "↩ Reset"; btnBg = "#555"; }
+        adminControls = `<div style="margin-top:10px; padding-top:10px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:12px">📞 <a href="tel:${o.phone}" style="color:blue;text-decoration:none;">${o.phone}</a></span><button onclick="updateStatus('${o.id}','${nextStatus}')" style="background:${btnBg}; color:#fff; border:none; border-radius:4px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:bold;">${btnLabel}</button></div>`;
     }
-    return `<div class="order-card" style="border-left:4px solid ${color}">
-      <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-        <strong>${o.name || 'User'} (${o.status})</strong> 
-        <span class="status-pill" style="background:${color}">${o.status}</span>
-      </div>
-      <div style="font-size:12px; color:#555; margin-bottom:5px;">${dateStr} • ₹${o.total} • ${o.paymentMethod}</div>
-      <div style="font-size:13px; font-weight:bold; color:var(--primary-color); margin: 3px 0;">⏰ ${o.deliverySlot || 'Standard Delivery'}</div>
-      <div style="background:#f5f5f5; padding:8px; border-radius:5px; margin-top:5px;">
-          <div style="font-size:12px; font-weight:bold; color:#333; margin-bottom:2px;">Items:</div>
-          ${itemsHtml}
-          ${deliveryRow}
-      </div>
-      <div style="font-size:11px; color:#888; margin-top:8px;">
-        📍 ${o.address} <br>
-        ${mapLink}
-      </div>
-      ${adminControls}
-    </div>`;
+    return `<div class="order-card" style="border-left:4px solid ${color}"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>${o.name || 'User'} (${o.status})</strong> <span class="status-pill" style="background:${color}">${o.status}</span></div><div style="font-size:12px; color:#555; margin-bottom:5px;">${dateStr} • ₹${o.total} • ${o.paymentMethod}</div><div style="font-size:13px; font-weight:bold; color:var(--primary-color); margin: 3px 0;">⏰ ${o.deliverySlot || 'Standard Delivery'}</div><div style="background:#f5f5f5; padding:8px; border-radius:5px; margin-top:5px;"><div style="font-size:12px; font-weight:bold; color:#333; margin-bottom:2px;">Items:</div>${itemsHtml}${deliveryRow}</div><div style="font-size:11px; color:#888; margin-top:8px;">📍 ${o.address} <br>${mapLink}</div>${adminControls}</div>`;
 }
-
-function updateStatus(id, newStatus){
-    if(!confirm("Change status to " + newStatus + "?")) return;
-    db.collection("orders").doc(id).update({
-        status: newStatus
-    }).then(() => {
-    }).catch((error) => {
-        alert("Error updating status: " + error.message);
-    });
-}
-
-function filter(){
-    let q=document.getElementById("searchInput").value.toLowerCase();
-    document.querySelectorAll(".product-item").forEach(p=>p.style.display=p.innerText.toLowerCase().includes(q)?"flex":"none");
-}
+function updateStatus(id, newStatus){ if(!confirm("Change status to " + newStatus + "?")) return; db.collection("orders").doc(id).update({ status: newStatus }).catch((error) => { alert("Error updating status: " + error.message); }); }
+function filter(){ let q=document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll(".product-item").forEach(p=>p.style.display=p.innerText.toLowerCase().includes(q)?"flex":"none"); }
 function resendVerificationLink() { currentUser.sendEmailVerification().then(()=>alert("Sent!")); }
 </script>
 </body>
