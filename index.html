@@ -256,10 +256,13 @@ label { font-weight: 500; color: #555; }
     <input type="text" id="editProdName">
     <label>Price (₹)</label>
     <input type="number" id="editProdPrice">
-    <label>Image URL (Photo Link)</label>
-    <input type="text" id="editProdImg" onchange="previewEditImage()">
+    
+    <label>Photo (Upload from Gallery or Paste URL)</label>
+    <input type="file" id="editProdFile" accept="image/*" style="margin-bottom:10px;" onchange="handleImageUpload(this, 'editProdImg', 'editImgPreview')">
+    <input type="text" id="editProdImg" placeholder="Image URL will appear here" onchange="previewEditImage()">
+    
     <div style="text-align:center; margin:10px 0;">
-        <img id="editImgPreview" src="" style="max-height:80px; border-radius:5px; border:1px solid #eee;">
+        <img id="editImgPreview" src="" style="max-height:100px; border-radius:5px; border:1px solid #eee;">
     </div>
     <label>Description</label>
     <textarea id="editProdDesc" rows="2"></textarea>
@@ -403,8 +406,10 @@ label { font-weight: 500; color: #555; }
                     <input type="number" id="newProdPrice" placeholder="Price (₹)" style="flex:1;">
                     <input type="text" id="newProdRating" placeholder="Rating (e.g. 4.5)" value="4.5" style="flex:1;">
                 </div>
-                <input type="text" id="newProdImg" placeholder="Image Link (Paste URL here)" onchange="previewImage()" style="margin-bottom:5px;">
-                <p style="font-size:10px; color:#666; margin-bottom:10px; margin-top:0;">*Paste any image link from Google. Example: https://via.placeholder.com/150</p>
+                
+                <label style="font-size:12px; font-weight:600; margin-top:10px; display:block;">Photo (Gallery Upload)</label>
+                <input type="file" id="newProdFile" accept="image/*" onchange="handleImageUpload(this, 'newProdImg', 'prevImgElement')">
+                <input type="text" id="newProdImg" placeholder="Or paste Image URL here" style="margin-bottom:5px;">
                 
                 <div id="imgPreview" style="display:none; text-align:center; margin-bottom:10px;">
                     <img id="prevImgElement" src="" style="height:60px; border-radius:5px; border:1px solid #ccc;">
@@ -778,7 +783,40 @@ function displayProducts(){
     }).join("");
 }
 
-// --- EDIT MODAL LOGIC (NEW) ---
+// --- IMAGE UPLOAD LOGIC (NEW) ---
+function handleImageUpload(inputElement, urlInputElementId, previewElementId) {
+    const file = inputElement.files[0];
+    if(!file) return;
+    
+    // UI Feedback
+    document.getElementById(urlInputElementId).value = "Processing image...";
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            // Resize to max 300px width to keep database small
+            const MAX_WIDTH = 300;
+            const scale = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scale;
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            // Convert to efficient JPEG
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+            
+            document.getElementById(urlInputElementId).value = dataUrl;
+            document.getElementById(previewElementId).src = dataUrl;
+            document.getElementById(previewElementId).parentNode.style.display = "block";
+        };
+    };
+    reader.readAsDataURL(file);
+}
+
+// --- EDIT MODAL LOGIC ---
 function openEditModal(id, event) {
     if(event) event.stopPropagation(); // Prevent opening product details
     const p = products.find(x => x.id === id);
