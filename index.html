@@ -24,7 +24,18 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { margin: 0; background: var(--bg-color); color: var(--text-dark); padding-bottom: 85px; font-family: var(--font-main); -webkit-font-smoothing: antialiased; }
+html, body { 
+    margin: 0; 
+    padding: 0;
+    width: 100%; 
+    height: 100%;
+    background: var(--bg-color); 
+    color: var(--text-dark); 
+    font-family: var(--font-main); 
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden; /* Fixes white side space permanently */
+}
+body { padding-bottom: 85px; }
 
 /* --- ANIMATIONS --- */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -37,6 +48,7 @@ body { margin: 0; background: var(--bg-color); color: var(--text-dark); padding-
     color: #fff; height: 75px; display: flex; align-items: center;
     padding: 0 15px; position: sticky; top: 0; z-index: 999;
     box-shadow: 0 4px 20px rgba(0,128,96,0.3);
+    width: 100%;
 }
 .logo { font-weight: 700; color: #fff; font-size: 1.4rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .search-bar {
@@ -95,7 +107,7 @@ body { margin: 0; background: var(--bg-color); color: var(--text-dark); padding-
 .menu-icon { margin-right: 15px; font-size: 20px; width: 30px; text-align: center; }
 
 /* --- PRODUCTS GRID --- */
-.container { max-width: 900px; margin: auto; padding: 15px; }
+.container { width: 100%; max-width: 900px; margin: auto; padding: 15px; }
 h3 { font-weight: 600; font-size: 18px; color: #333; letter-spacing: -0.5px; }
 #productGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -143,7 +155,7 @@ h3 { font-weight: 600; font-size: 18px; color: #333; letter-spacing: -0.5px; }
 }
 .buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(0,128,96,0.2); }
 
-/* --- PRODUCT DETAILS PAGE --- */
+/* --- PRODUCT DETAILS PAGE (NEWLY UPDATED) --- */
 #productDetailsPage {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: #fff; z-index: 2000; overflow-y: auto; display: none; padding-bottom: 90px;
@@ -153,6 +165,7 @@ h3 { font-weight: 600; font-size: 18px; color: #333; letter-spacing: -0.5px; }
     position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
     padding: 15px; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); 
     z-index: 2001; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    width: 100%;
 }
 .pd-back { font-size: 24px; margin-right: 15px; color: #333; cursor: pointer; background: #f5f5f5; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 .pd-title-top { font-size: 18px; font-weight: 600; color: #333; }
@@ -170,6 +183,56 @@ h3 { font-weight: 600; font-size: 18px; color: #333; letter-spacing: -0.5px; }
     display: flex; align-items: center; padding: 0 20px; gap: 15px; z-index: 2002;
     border-radius: 20px 20px 0 0;
 }
+.pd-desc-box { margin-bottom: 30px; }
+.pd-label { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+.pd-text { 
+    font-size: 13px; color: #555; line-height: 1.7; 
+    text-align: justify; /* Justified text for professional look */
+}
+
+/* --- COMPACT RELATED PRODUCTS (MOBILE FRIENDLY) --- */
+.related-grid {
+    display: grid;
+    /* Use 3 columns to make them "chota" (small) and fit nicely */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px;
+    margin-top: 10px;
+}
+.rel-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px;
+    border: 1px solid #f0f0f0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.rel-card:active { transform: scale(0.95); }
+.rel-img {
+    width: 100%;
+    height: 65px; /* Smaller image height */
+    object-fit: contain;
+    margin-bottom: 5px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.rel-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+.rel-price {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
 
 /* --- RATINGS --- */
 .rating-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
@@ -466,7 +529,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// *** PERSISTENCE SETTING: KEEPS USER LOGGED IN UNTIL EXPLICIT LOGOUT ***
+// *** PERSISTENCE SETTING ***
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 const ADMIN_EMAIL = "ubadch89688@gmail.com"; 
@@ -482,7 +545,7 @@ let tempOrderDetails = {};
 let selectedSlot = ""; 
 let customerLocation = null; 
 
-// --- MASSIVE PRODUCT LIST (135 Items) ---
+// --- PRODUCT LIST (Initial Short Descriptions) ---
 let products = [
     { id: 1, name: "Venus Soap", price: 30, img: "https://via.placeholder.com/200?text=Venus+Soap", desc: "Best quality soap.", rating: 4.5, reviews: 10 },
     { id: 2, name: "Lux Soap", price: 35, img: "https://via.placeholder.com/200?text=Lux+Soap", desc: "Fragrant beauty soap.", rating: 4.6, reviews: 20 },
@@ -632,6 +695,10 @@ auth.onAuthStateChanged(user => {
             
             // LOAD CUSTOM PRODUCTS FROM DB, THEN RENDER
             loadCustomProducts().then(() => {
+                // IMPORTANT: Generate long descriptions before first render
+                products.forEach(p => {
+                    p.desc = getDetailedDescription(p.name);
+                });
                 displayProducts();
             });
 
@@ -653,6 +720,48 @@ auth.onAuthStateChanged(user => {
         document.getElementById("verifyPage").classList.add("hidden");
     }
 });
+
+// --- HELPER FUNCTION FOR LONG DESCRIPTIONS ---
+function getDetailedDescription(name) {
+    let lowerName = name.toLowerCase();
+    
+    if(lowerName.includes("soap") || lowerName.includes("sabun")) {
+        return `Experience the ultimate freshness with ${name}. This premium quality soap is formulated with natural ingredients that gently cleanse your skin while maintaining its natural moisture balance. Infused with a long-lasting fragrance, it leaves you feeling revitalized and confident throughout the day. Suitable for all skin types, this soap produces a rich, creamy lather that washes away dirt and impurities effectively. Dermatologically tested and safe for daily use. Make your bathing ritual a luxurious experience with the trusted care of ${name}. Perfect for the whole family. Use daily for soft, glowing, and healthy skin.`;
+    }
+    
+    if(lowerName.includes("shampoo") || lowerName.includes("conditioner")) {
+        return `Give your hair the care it deserves with ${name}. Enriched with vital nutrients and natural extracts, this formula strengthens hair from the roots to tips. It effectively removes oil, dirt, and dandruff while keeping your scalp healthy. Say goodbye to hair fall and dryness with regular use. Its advanced conditioning properties leave your hair silky, smooth, and manageable. Suitable for all hair types, this product adds a natural shine and bounce to your locks. Experience salon-like hair care at home with ${name}.`;
+    }
+
+    if(lowerName.includes("oil") || lowerName.includes("tel")) {
+        return `Promote a healthy lifestyle with ${name}. Extracted from the finest quality seeds, this oil is rich in essential nutrients and antioxidants. It is processed using advanced technology to retain its natural aroma and flavor. Ideal for deep frying, sautéing, and everyday cooking, it ensures low absorption, making your meals lighter and healthier. It helps maintain healthy cholesterol levels and supports heart health. Add a touch of purity and taste to your dishes with ${name}. A must-have in every kitchen for delicious and nutritious meals.`;
+    }
+
+    if(lowerName.includes("atta") || lowerName.includes("flour") || lowerName.includes("besan") || lowerName.includes("maida")) {
+        return `Bring home the goodness of nature with our premium ${name}. Sourced from the finest fields and ground to perfection, this product ensures superior taste and texture. Rich in protein, dietary fiber, and essential minerals, it is the perfect choice for a healthy diet. Our hygienic packaging technology ensures that the freshness and nutrients are sealed in, giving you the authentic taste of home-cooked meals. Free from added preservatives and artificial colors. Ideal for making soft rotis, delicious parathas, and traditional sweets. Trust ${name} for purity and quality.`;
+    }
+
+    if(lowerName.includes("dal") || lowerName.includes("pulses") || lowerName.includes("rajma") || lowerName.includes("chana")) {
+        return `Enjoy the authentic taste of Indian cuisine with superior quality ${name}. Carefully selected and sorted, these grains are unpolished to retain their natural goodness and nutritional value. Rich in protein and essential vitamins, they are a staple for a balanced diet. Easy to cook and delicious to eat, they provide a wholesome meal for your family. Sourced from the best farms, our ${name} promises consistency in taste and aroma. Perfect for making traditional curries and healthy salads. Experience the taste of purity in every bite.`;
+    }
+
+    if(lowerName.includes("rice") || lowerName.includes("chawal") || lowerName.includes("basmati")) {
+        return `Savor the exquisite aroma and long grains of ${name}. Aged to perfection, this premium rice cooks to be fluffy, non-sticky, and full of flavor. Ideal for biryanis, pulao, and everyday meals, it adds a royal touch to your dining table. Sourced from the fertile fields, every grain is a testament to quality and purity. Rich in carbohydrates and easy to digest, it provides the energy you need for an active lifestyle. Make every meal a celebration with the superior taste of ${name}.`;
+    }
+
+    if(lowerName.includes("biscuit") || lowerName.includes("cookies") || lowerName.includes("rusk")) {
+        return `Delight your taste buds with the crispy and crunchy goodness of ${name}. Baked to perfection using high-quality ingredients, these are the perfect companion for your morning tea or evening snacks. Packed with energy and flavor, they are loved by kids and adults alike. Whether you are at home or on the go, ${name} offers a quick and tasty hunger solution. Free from harmful trans fats, it balances taste and health beautifully. Enjoy the classic taste that brings smiles to every face.`;
+    }
+
+    if(lowerName.includes("masala") || lowerName.includes("spices") || lowerName.includes("haldi") || lowerName.includes("mirch") || lowerName.includes("jeera")) {
+        return `Enhance the flavor of your dishes with the aromatic and potent ${name}. Sourced from the best spice gardens, this product is ground at low temperatures to preserve its natural oils and vibrant color. It adds a rich, authentic taste to your curries and vegetables. Free from artificial fillers and additives, it guarantees purity in every pinch. Known for its medicinal properties and culinary excellence, ${name} is an essential ingredient in every Indian kitchen. Cook with confidence and flavor.`;
+    }
+
+    // Default Description for others
+    return `Discover the premium quality of ${name}, brought to you by Ubaid Kirana Store. This product is selected with great care to ensure it meets the highest standards of quality and freshness. Whether for daily use or special occasions, it delivers consistent performance and satisfaction. We believe in providing our customers with only the best, and this product is no exception. Packed hygienically to retain its natural properties, it offers great value for money. Add ${name} to your cart today and experience the difference in quality and service.`;
+}
+
+// ... (Rest of the previous code functions remain exactly the same: loadUserProfile, loadUserCart, saveUserCart, etc.) ...
 
 let userProfileData = {};
 
@@ -724,20 +833,20 @@ function highlightNav(el) {
     el.classList.add("active");
 }
 
-// --- DYNAMIC PRODUCT LOADING (UPDATED FOR MERGING) ---
+// --- DYNAMIC PRODUCT LOADING ---
 async function loadCustomProducts() {
     try {
         const snapshot = await db.collection("products").get();
         if (!snapshot.empty) {
             snapshot.forEach(doc => {
                 const data = doc.data();
-                // Check if this ID already exists in the local 'products' array
+                // Ensure custom products also get detailed descriptions
+                data.desc = getDetailedDescription(data.name);
+                
                 const existingIndex = products.findIndex(p => p.id === data.id);
                 if (existingIndex !== -1) {
-                    // Update existing hardcoded product with DB data
                     products[existingIndex] = data;
                 } else {
-                    // Add new product to top
                     products.unshift(data);
                 }
             });
@@ -771,7 +880,7 @@ function displayProducts(){
                     <span class="rating-count">(${p.reviews})</span>
                     <div class="f-assured" style="margin-left:auto; display:flex; align-items:center;"><img src="u_fire_logo.jpg" alt="U" onerror="this.style.display='none'" style="height:14px;"><span class="f-assured-text" style="color:#2874f0; font-size:10px; font-weight:700; font-style:italic;">Assured</span></div>
                 </div>
-                <div class="product-desc-text">${p.desc}</div> <div class="price-tag">₹${p.price}</div>
+                <div class="product-desc-text" style="font-size:10px;">${p.desc}</div> <div class="price-tag">₹${p.price}</div>
             </div>
             <div class="btn-group">
                 ${cartItem ? 
@@ -783,12 +892,11 @@ function displayProducts(){
     }).join("");
 }
 
-// --- IMAGE UPLOAD LOGIC (NEW) ---
+// --- IMAGE UPLOAD LOGIC ---
 function handleImageUpload(inputElement, urlInputElementId, previewElementId) {
     const file = inputElement.files[0];
     if(!file) return;
     
-    // UI Feedback
     document.getElementById(urlInputElementId).value = "Processing image...";
     
     const reader = new FileReader();
@@ -798,14 +906,12 @@ function handleImageUpload(inputElement, urlInputElementId, previewElementId) {
         img.onload = () => {
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
-            // Resize to max 300px width to keep database small
             const MAX_WIDTH = 300;
             const scale = MAX_WIDTH / img.width;
             canvas.width = MAX_WIDTH;
             canvas.height = img.height * scale;
             
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            // Convert to efficient JPEG
             const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
             
             document.getElementById(urlInputElementId).value = dataUrl;
@@ -818,7 +924,7 @@ function handleImageUpload(inputElement, urlInputElementId, previewElementId) {
 
 // --- EDIT MODAL LOGIC ---
 function openEditModal(id, event) {
-    if(event) event.stopPropagation(); // Prevent opening product details
+    if(event) event.stopPropagation();
     const p = products.find(x => x.id === id);
     if(!p) return;
 
@@ -847,7 +953,6 @@ function saveEditProduct() {
     const img = document.getElementById("editProdImg").value;
     const desc = document.getElementById("editProdDesc").value;
     
-    // Find original to keep rating/reviews
     const original = products.find(x => x.id === id);
     const updatedData = {
         id: id,
@@ -859,11 +964,9 @@ function saveEditProduct() {
         reviews: original ? original.reviews : 0
     };
 
-    // Save to Firestore (using ID as document name to overwrite)
     db.collection("products").doc(String(id)).set(updatedData, { merge: true })
     .then(() => {
         alert("Product Updated Successfully!");
-        // Update local array
         const idx = products.findIndex(x => x.id === id);
         if(idx !== -1) products[idx] = updatedData;
         
@@ -881,16 +984,18 @@ function openProductDetails(id) {
     
     const cartItem = cart[p.id];
     
-    // Logic for Related Products (Exclude current item, take 4 others)
-    let relatedHtml = products.filter(x => x.id !== id).slice(0, 4).map(r => `
+    // UPDATED: Shuffle and slice for unique/random recommendations
+    let relatedHtml = products.filter(x => x.id !== id)
+                              .sort(() => 0.5 - Math.random()) // Randomize order
+                              .slice(0, 6) // Take 6 items
+                              .map(r => `
         <div class="rel-card" onclick="openProductDetails(${r.id})">
             <img src="${r.img}" class="rel-img" loading="lazy" onerror="this.src='https://via.placeholder.com/100?text=Product'">
-            <div class="rel-name" style="font-size:12px; font-weight:600;">${r.name}</div>
-            <div class="rel-price" style="font-size:13px; font-weight:700; color:var(--primary-color);">₹${r.price}</div>
+            <div class="rel-name">${r.name}</div>
+            <div class="rel-price">₹${r.price}</div>
         </div>
     `).join("");
 
-    // Inject HTML into the detail content div
     document.getElementById("productDetailContent").innerHTML = `
         <div class="pd-header">
             <span class="pd-back" onclick="closeProductDetails()">←</span>
@@ -919,15 +1024,15 @@ function openProductDetails(id) {
 
             <div class="related-section">
                 <div class="related-header" style="font-weight:700; margin-bottom:15px; color:#333;">You might also like</div>
-                <div class="related-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="related-grid">
                     ${relatedHtml}
                 </div>
             </div>
 
-            <div class="pd-badges">
-                <span class="badge-pill b-assured" style="background:#e3f2fd; color:#1565c0;">🛡️ Ubaid Assured</span>
-                <span class="badge-pill b-cod" style="background:#fff3e0; color:#ef6c00;">🚚 COD Available</span>
-                <span class="badge-pill b-fresh" style="background:#e8f5e9; color:#2e7d32;">🍃 Fresh Product</span>
+            <div class="pd-badges" style="margin-top:20px;">
+                <span class="badge-pill b-assured" style="background:#e3f2fd; color:#1565c0; padding:5px 10px; border-radius:15px; font-size:12px; margin-right:5px;">🛡️ Ubaid Assured</span>
+                <span class="badge-pill b-cod" style="background:#fff3e0; color:#ef6c00; padding:5px 10px; border-radius:15px; font-size:12px; margin-right:5px;">🚚 COD Available</span>
+                <span class="badge-pill b-fresh" style="background:#e8f5e9; color:#2e7d32; padding:5px 10px; border-radius:15px; font-size:12px;">🍃 Fresh Product</span>
             </div>
         </div>
 
@@ -940,24 +1045,18 @@ function openProductDetails(id) {
         </div>
     `;
 
-    // Show the page
-    document.getElementById("productDetailsPage").classList.add("active");
+    const page = document.getElementById("productDetailsPage");
+    page.classList.add("active");
+    page.scrollTop = 0;
 }
 
 function closeProductDetails() {
     document.getElementById("productDetailsPage").classList.remove("active");
-    // Refresh main grid in case quantities changed
     displayProducts();
     updateCartDisplay();
 }
 
-function updateQtyFromDetails(id) {
-    // If user clicks "IN CART" button inside details page, take them to cart
-    closeProductDetails();
-    openCart();
-}
-
-// -- EXISTING CART LOGIC ---
+// -- CART & ADDRESS LOGIC --
 function updateQty(id, change) {
     const product = products.find(p => p.id === id);
     if (!cart[id]) cart[id] = { ...product, qty: 0 };
@@ -967,7 +1066,6 @@ function updateQty(id, change) {
     updateCartDisplay(); 
     displayProducts();
     
-    // If the details page is open, refresh it to show updated button state
     if(document.getElementById("productDetailsPage").classList.contains("active")){
         openProductDetails(id);
     }
@@ -1009,13 +1107,12 @@ function buyNow(id){
     let item = cart[id];
     let qty = item ? item.qty : 1;
     directPurchaseItem = [{ ...products.find(p => p.id === id), qty: qty }];
-    closeProductDetails(); // Close details if open
+    closeProductDetails(); 
     goToAddress('direct');
 }
 
 function hideAll(){
     ["shopPage","cartPage","addressPage","slotPage","paymentPage","myOrdersPage","adminPage"].forEach(id=>document.getElementById(id).classList.add("hidden"));
-    // Also ensure product details is closed
     document.getElementById("productDetailsPage").classList.remove("active");
 }
 function goHome(){ 
@@ -1051,8 +1148,11 @@ function goToAddress(mode, isRefresh = false){
     `).join("");
 
     document.getElementById("checkoutItemsList").innerHTML = `<h4 style="margin:0 0 15px 0; color:#444;">🛒 Your Basket</h4>${itemsHtml}`;
+    
     let deliveryText = (deliveryCharge === 0) ? `<span style="color:green; font-weight:bold;">FREE</span>` : `<span style="color:red; font-weight:bold;">₹20</span>`;
-    let freeDelNote = (itemTotal < 199) ? `<div style="font-size:11px; color:#d32f2f; margin-top:5px;">⚠️ Add items worth ₹${199 - itemTotal} more for FREE Delivery!</div>` : `<div style="font-size:11px; color:green; margin-top:5px;">✅ Free Delivery Applied</div>`;
+    let freeDelNote = (itemTotal < 199) ? 
+        `<div style="font-size:12px; color:#1976d2; margin-top:5px; background:#e3f2fd; padding:10px; border-radius:8px; border:1px dashed #1976d2; font-weight:600;">ℹ️ Add items worth ₹${199 - itemTotal} more for FREE Delivery!</div>` : 
+        `<div style="font-size:12px; color:#2e7d32; margin-top:5px; background:#e8f5e9; padding:10px; border-radius:8px; border:1px dashed #2e7d32; font-weight:600;">✅ Free Delivery Applied</div>`;
 
     document.getElementById("checkoutBillDetails").innerHTML = `
         <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:8px;"><span>Item Total</span> <b>₹${itemTotal}</b></div>
@@ -1085,7 +1185,6 @@ function updateQtyCheckout(id, change) {
 }
 function goBackToAddress(){ hideAll(); document.getElementById("addressPage").classList.remove("hidden"); }
 
-// --- FAST LOCATION OPTIMIZED ---
 function detectLocation() {
     const btn = document.getElementById("locBtn");
     const addressBox = document.getElementById("custAddress");
@@ -1104,7 +1203,6 @@ function detectLocation() {
         const lon = position.coords.longitude;
         customerLocation = { lat: lat, lng: lon }; 
         
-        // Immediate Feedback
         btn.innerHTML = "<span>✅</span> Found!";
         addressBox.placeholder = "Fetching address...";
         
@@ -1126,7 +1224,6 @@ function detectLocation() {
     }, options);
 }
 
-// --- SLOT ---
 function goToSlotPage() {
     const name = document.getElementById("custName").value;
     const phone = document.getElementById("custPhone").value;
@@ -1161,7 +1258,6 @@ function generateSlots() {
     });
 }
 
-// --- PAYMENT ---
 function goToPayment(){
     if(!selectedSlot) return alert("Please select a delivery time slot!");
     tempOrderDetails.deliverySlot = selectedSlot; hideAll(); document.getElementById("paymentPage").classList.remove("hidden");
@@ -1195,7 +1291,6 @@ function completeOrder(method, txnId){
 }
 function closeSuccess(){ document.getElementById("successOverlay").classList.add("hidden"); goHome(); }
 
-// --- ADMIN & ORDERS ---
 function openAdmin(){ if(currentUser.email !== ADMIN_EMAIL) return alert("Access Denied!"); hideAll(); document.getElementById("adminPage").classList.remove("hidden"); loadAdminOrders(); }
 function openMyOrders(){ hideAll(); document.getElementById("myOrdersPage").classList.remove("hidden"); }
 function loadAdminOrders(){
@@ -1219,18 +1314,6 @@ function loadCustomerOrders(){
     });
 }
 
-// --- ADD NEW PRODUCT FUNCTION ---
-function previewImage() {
-    const url = document.getElementById("newProdImg").value;
-    const prev = document.getElementById("imgPreview");
-    if(url) {
-        prev.style.display = "block";
-        document.getElementById("prevImgElement").src = url;
-    } else {
-        prev.style.display = "none";
-    }
-}
-
 function addNewProduct() {
     const name = document.getElementById("newProdName").value;
     const price = document.getElementById("newProdPrice").value;
@@ -1242,9 +1325,8 @@ function addNewProduct() {
         return alert("Please fill Name, Price and Image Link");
     }
 
-    const newId = Date.now(); // Unique ID based on time
+    const newId = Date.now(); 
     
-    // Save new product to Firestore
     db.collection("products").doc(String(newId)).set({
         id: newId,
         name: name,
@@ -1255,13 +1337,11 @@ function addNewProduct() {
         reviews: 0
     }).then(() => {
         alert("Product Added Successfully!");
-        // Clear fields
         document.getElementById("newProdName").value = "";
         document.getElementById("newProdPrice").value = "";
         document.getElementById("newProdImg").value = "";
         document.getElementById("newProdDesc").value = "";
         document.getElementById("imgPreview").style.display = "none";
-        // Reload products
         loadCustomProducts().then(() => displayProducts());
     }).catch(e => alert("Error adding product: " + e.message));
 }
