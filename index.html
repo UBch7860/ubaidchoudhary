@@ -13,17 +13,19 @@
     --primary-dark: #004c3f;
     --primary-light: #e0f2f1;
     --accent-color: #ff6f00;  
-    --bg-color: #f8f9fa;
+    --bg-color: #f4f6f8;
     --text-dark: #1a1a1a;
     --text-grey: #666;
     --card-bg: #ffffff;
-    --shadow-soft: 0 8px 24px rgba(0,0,0,0.08);
+    --shadow-soft: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-hover: 0 12px 24px rgba(0,0,0,0.12);
     --border-radius: 16px;
     --bottom-nav-height: 65px;
     --font-main: 'Poppins', sans-serif;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
 html, body { 
     margin: 0; 
     padding: 0;
@@ -33,28 +35,29 @@ html, body {
     color: var(--text-dark); 
     font-family: var(--font-main); 
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden; /* Fixes white side space permanently */
+    overflow-x: hidden;
 }
 body { padding-bottom: 85px; }
 
 /* --- ANIMATIONS --- */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.container, .form-card, .product-item { animation: fadeIn 0.3s ease-out; }
+/* FIXED: Removed .product-item from here so the whole screen doesn't jump on add to cart */
+.container, .form-card { animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
 
 /* --- HEADER --- */
 .header {
-    background: rgba(0, 128, 96, 0.95);
+    background: rgba(0, 128, 96, 0.98);
     backdrop-filter: blur(10px);
     color: #fff; height: 75px; display: flex; align-items: center;
     padding: 0 15px; position: sticky; top: 0; z-index: 999;
-    box-shadow: 0 4px 20px rgba(0,128,96,0.3);
+    box-shadow: 0 4px 20px rgba(0,128,96,0.25);
     width: 100%;
 }
 .logo { font-weight: 700; color: #fff; font-size: 1.4rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .search-bar {
     flex: 1; margin-left: 15px; background: rgba(255,255,255,0.15); border-radius: 50px; 
     overflow: hidden; display: flex; align-items: center; height: 42px; border: 1px solid rgba(255,255,255,0.2);
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 .search-bar:focus-within { background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 .search-bar input {
@@ -68,18 +71,19 @@ body { padding-bottom: 85px; }
 /* --- NAVIGATION --- */
 .bottom-nav {
     position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
-    background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
     display: flex; justify-content: space-around; align-items: center;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.06); z-index: 1000; border-top: 1px solid rgba(0,0,0,0.05);
     border-radius: 20px 20px 0 0;
 }
 .nav-item {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 11px; color: #999; width: 25%; height: 100%; cursor: pointer; transition: 0.3s;
+    font-size: 11px; color: #999; width: 25%; height: 100%; cursor: pointer; transition: 0.3s ease;
     font-weight: 500;
 }
-.nav-item.active { color: var(--primary-color); }
-.nav-item span { font-size: 22px; margin-bottom: 4px; }
+.nav-item.active { color: var(--primary-color); transform: translateY(-2px); }
+.nav-item span { font-size: 22px; margin-bottom: 4px; transition: transform 0.2s; }
+.nav-item:active span { transform: scale(0.9); }
 #cartCountBadge {
     background: var(--accent-color); color: white; font-size: 10px; font-weight: 700;
     padding: 2px 6px; border-radius: 10px; position: absolute; top: -8px; right: -10px;
@@ -90,12 +94,12 @@ body { padding-bottom: 85px; }
 /* --- MENU --- */
 .menu-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); z-index: 1001; backdrop-filter: blur(2px);
+    background: rgba(0,0,0,0.6); z-index: 1001; backdrop-filter: blur(3px);
 }
 .menu-drawer {
     position: absolute; bottom: -100%; left: 0; width: 100%;
     background: #fff; border-radius: 25px 25px 0 0;
-    padding: 30px 20px; transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 30px 20px; transition: bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .menu-open .menu-drawer { bottom: 0; }
 .menu-open { display: block; }
@@ -109,51 +113,56 @@ body { padding-bottom: 85px; }
 /* --- PRODUCTS GRID --- */
 .container { width: 100%; max-width: 900px; margin: auto; padding: 15px; }
 h3 { font-weight: 600; font-size: 18px; color: #333; letter-spacing: -0.5px; }
-#productGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+#productGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
 .product-item {
-    background: #fff; padding: 12px; border-radius: var(--border-radius);
+    background: #fff; padding: 15px; border-radius: var(--border-radius);
     box-shadow: var(--shadow-soft); display: flex; flex-direction: column;
-    border: none; position: relative; transition: transform 0.2s;
+    border: 1px solid rgba(0,0,0,0.02); position: relative; transition: all 0.3s ease;
     overflow: hidden; will-change: transform;
 }
-.product-item:active { transform: scale(0.98); }
+.product-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.product-item:active { transform: scale(0.97); }
 .product-img { 
-    width: 100%; height: 140px; object-fit: contain; margin-bottom: 10px; 
+    width: 100%; height: 140px; object-fit: contain; margin-bottom: 15px; 
     display: block; margin-left: auto; margin-right: auto; cursor: pointer;
+    transition: transform 0.3s ease;
 }
+.product-item:hover .product-img { transform: scale(1.05); }
 .product-details b { 
-    display: block; margin-bottom: 6px; color: #212121; font-size: 14px; 
+    display: block; margin-bottom: 6px; color: #1a1a1a; font-size: 15px; 
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;
 }
 .product-desc-text {
-    font-size: 11px; color: #878787; margin-bottom: 8px; line-height: 1.4;
+    font-size: 12px; color: #777; margin-bottom: 10px; line-height: 1.5;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     overflow: hidden; text-overflow: ellipsis;
 }
 .product-details div.price-tag { 
-    color: #212121; font-weight: 700; font-size: 16px; margin-bottom: 8px; 
+    color: var(--primary-dark); font-weight: 700; font-size: 18px; margin-bottom: 12px; 
 }
 .admin-edit-btn {
-    position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: #fff;
-    border: none; border-radius: 5px; padding: 4px 8px; font-size: 10px; cursor: pointer; z-index: 10;
+    position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff;
+    border: none; border-radius: 6px; padding: 5px 10px; font-size: 11px; cursor: pointer; z-index: 10;
+    backdrop-filter: blur(4px); transition: 0.2s;
 }
+.admin-edit-btn:hover { background: rgba(0,0,0,0.9); }
 
 /* --- BUTTONS --- */
-.btn-group { display: flex; gap: 8px; flex-direction: column; margin-top: auto; }
+.btn-group { display: flex; gap: 10px; flex-direction: column; margin-top: auto; }
 .add-btn {
     background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color);
-    padding: 8px 0; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; 
-    font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.2s;
+    padding: 10px 0; border-radius: 12px; cursor: pointer; font-weight: 600; width: 100%; 
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease;
 }
-.add-btn:active { background: var(--primary-light); }
+.add-btn:active { background: var(--primary-light); transform: scale(0.95); } /* ADDED: Button scale effect */
 .buy-btn {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    color: #fff; border: none; padding: 10px 0; border-radius: 10px; cursor: pointer; 
-    font-weight: 600; width: 100%; box-shadow: 0 4px 10px rgba(0,128,96,0.3);
-    font-size: 13px; transition: 0.2s;
+    color: #fff; border: none; padding: 12px 0; border-radius: 12px; cursor: pointer; 
+    font-weight: 600; width: 100%; box-shadow: 0 4px 12px rgba(0,128,96,0.25);
+    font-size: 14px; text-transform: uppercase; transition: all 0.2s ease; letter-spacing: 0.5px;
 }
-.buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(0,128,96,0.2); }
+.buy-btn:active { transform: translateY(2px) scale(0.98); box-shadow: 0 2px 6px rgba(0,128,96,0.2); }
 
 /* --- PRODUCT DETAILS PAGE (NEWLY UPDATED) --- */
 #productDetailsPage {
@@ -162,130 +171,179 @@ h3 { font-weight: 600; font-size: 18px; color: #333; letter-spacing: -0.5px; }
 }
 #productDetailsPage.active { display: block; animation: fadeIn 0.3s ease-in-out; }
 .pd-header {
-    position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-    padding: 15px; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); 
+    position: sticky; top: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px);
+    padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); 
     z-index: 2001; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     width: 100%;
 }
-.pd-back { font-size: 24px; margin-right: 15px; color: #333; cursor: pointer; background: #f5f5f5; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.pd-back { font-size: 24px; margin-right: 15px; color: #333; cursor: pointer; background: #f5f5f5; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
+.pd-back:active { background: #e0e0e0; transform: scale(0.9); }
 .pd-title-top { font-size: 18px; font-weight: 600; color: #333; }
-.pd-scroll-content { padding: 20px; }
+.pd-scroll-content { padding: 20px; max-width: 800px; margin: 0 auto; }
 .pd-image-box {
-    width: 100%; height: 280px; display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 320px; display: flex; align-items: center; justify-content: center;
     border: none; margin-bottom: 25px; border-radius: 20px; background: #fff; padding: 10px;
 }
 .pd-image { max-width: 100%; max-height: 100%; object-fit: contain; }
-.pd-main-title { font-size: 22px; font-weight: 700; color: #212121; margin-bottom: 8px; line-height: 1.3; }
-.pd-price { font-size: 32px; font-weight: 700; color: #212121; margin: 15px 0; letter-spacing: -1px; }
+.pd-main-title { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; line-height: 1.3; }
+.pd-price { font-size: 34px; font-weight: 700; color: var(--primary-dark); margin: 15px 0; letter-spacing: -1px; }
+
+/* 🌟 UPDATED DESCRIPTION BOX (PROFESSIONAL LOOK) 🌟 */
+.pd-desc-box { 
+    margin: 25px 0; 
+    background: #f8fcfb; 
+    padding: 20px; 
+    border-radius: 16px; 
+    border: 1px solid #e0f2f1;
+}
+.pd-label { 
+    font-size: 16px; 
+    font-weight: 700; 
+    color: var(--primary-dark); 
+    margin-bottom: 12px; 
+    border-bottom: 2px solid var(--primary-light); 
+    padding-bottom: 8px; 
+    display: inline-block;
+}
+.pd-text { 
+    font-size: 14px; 
+    color: #4a4a4a; 
+    line-height: 1.8; 
+    text-align: left; 
+    letter-spacing: 0.2px;
+}
+
 .pd-footer-actions {
-    position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
-    background: #fff; box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 85px;
+    background: #fff; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
     display: flex; align-items: center; padding: 0 20px; gap: 15px; z-index: 2002;
     border-radius: 20px 20px 0 0;
-}
-.pd-desc-box { margin-bottom: 30px; }
-.pd-label { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
-.pd-text { 
-    font-size: 13px; color: #555; line-height: 1.7; 
-    text-align: justify; /* Justified text for professional look */
 }
 
 /* --- COMPACT RELATED PRODUCTS (MOBILE FRIENDLY) --- */
 .related-grid {
     display: grid;
-    /* Use 3 columns to make them "chota" (small) and fit nicely */
     grid-template-columns: repeat(3, 1fr); 
-    gap: 10px;
-    margin-top: 10px;
+    gap: 12px;
+    margin-top: 15px;
 }
 .rel-card {
     background: #fff;
     border-radius: 12px;
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #f0f0f0;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.2s ease;
 }
+.rel-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 .rel-card:active { transform: scale(0.95); }
 .rel-img {
     width: 100%;
-    height: 65px; /* Smaller image height */
+    height: 75px; 
     object-fit: contain;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     display: block;
     margin-left: auto;
     margin-right: auto;
 }
 .rel-name {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #333;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 .rel-price {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--primary-color);
 }
 
-
 /* --- RATINGS --- */
-.rating-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
-.rating-badge { background-color: #388e3c; color: white; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
+.rating-row { display: flex; align-items: center; margin-bottom: 12px; gap: 10px; }
+.rating-badge { background-color: #388e3c; color: white; font-size: 13px; font-weight: 700; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 5px rgba(56,142,60,0.3); }
 
 /* --- QUANTITY & CONTROLS --- */
 .qty-btn-group {
-    display: flex; align-items: center; background: #fff; border-radius: 10px;
-    width: 100%; justify-content: space-between; border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden;
+    display: flex; align-items: center; background: #fff; border-radius: 12px;
+    width: 100%; justify-content: space-between; border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04); overflow: hidden;
 }
-.qty-btn-group span { padding: 10px 18px; cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 18px; background: #f9f9f9; }
-.qty-btn-group .qty-val { flex-grow: 1; text-align: center; font-size: 16px; font-weight: 600; background: #fff; color: #333; }
+/* FIXED: Added transform scale to +/- buttons for specific product tactile feedback */
+.qty-btn-group span { padding: 12px 20px; cursor: pointer; font-weight: bold; color: var(--primary-color); font-size: 18px; background: #f9f9f9; transition: background 0.2s, transform 0.1s; }
+.qty-btn-group span:active { background: #eee; transform: scale(0.85); }
+.qty-btn-group .qty-val { flex-grow: 1; text-align: center; font-size: 16px; font-weight: 600; background: #fff; color: #333; pointer-events: none; }
 
 /* --- FORMS & AUTH --- */
-.form-card { background: #fff; padding: 30px 20px; border-radius: 20px; box-shadow: var(--shadow-soft); margin-bottom: 20px; }
+.form-card { background: #fff; padding: 30px 20px; border-radius: 20px; box-shadow: var(--shadow-soft); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.03); }
 .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-.close-page-btn { background: #f5f5f5; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #333; font-weight: bold; }
+.close-page-btn { background: #f5f5f5; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #333; font-weight: bold; transition: 0.2s; }
+.close-page-btn:active { transform: scale(0.9); background: #e0e0e0; }
 input, textarea { 
-    width: 100%; padding: 16px; margin: 10px 0; border: 1px solid #eaeaea; 
-    border-radius: 12px; background: #fcfcfc; font-size: 15px; font-family: var(--font-main);
-    transition: 0.3s;
+    width: 100%; padding: 16px; margin: 10px 0; border: 1px solid #e0e0e0; 
+    border-radius: 12px; background: #fafafa; font-size: 15px; font-family: var(--font-main);
+    transition: all 0.3s ease;
 }
-input:focus, textarea:focus { border-color: var(--primary-color); background: #fff; box-shadow: 0 4px 12px rgba(0,128,96,0.1); outline: none; }
+input:focus, textarea:focus { border-color: var(--primary-color); background: #fff; box-shadow: 0 4px 15px rgba(0,128,96,0.1); outline: none; }
 label { font-weight: 500; color: #555; }
 
 /* --- CART & CHECKOUT --- */
-.cart-row { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px dashed #eee; }
-.cart-item-img { width: 70px; height: 70px; object-fit: contain; border-radius: 10px; margin-right: 15px; background: #f9f9f9; padding: 5px; }
+.cart-row { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
+.cart-item-img { width: 80px; height: 80px; object-fit: contain; border-radius: 12px; margin-right: 15px; background: #fff; padding: 5px; border: 1px solid #eee; }
 .cart-controls-mini { border-radius: 8px; border: 1px solid #eee; margin-top: 8px; }
-.checkout-item { border-bottom: 1px dashed #eee; padding: 15px 0; }
+.checkout-item { border-bottom: 1px solid #f0f0f0; padding: 15px 0; }
 
-/* --- AUTH PAGE --- */
-#authPage { background: linear-gradient(135deg, #ffffff 0%, #f0f4f3 100%); }
+/* --- AUTH PAGE (FIXED: CENTER ALIGNMENT) --- */
+#authPage { 
+    background: linear-gradient(135deg, #ffffff 0%, #f0f4f3 100%); 
+    display: flex;              /* ADDED */
+    justify-content: center;    /* ADDED: Centers horizontally */
+    align-items: center;        /* ADDED: Centers vertically */
+    min-height: 100vh;          /* ADDED: Full viewport height */
+}
 .auth-input-group { text-align: left; width: 100%; margin-bottom: 15px; }
 .auth-input-group label { margin-left: 5px; font-size: 13px; font-weight: 600; color: #444; }
 .auth-btn {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white; width: 100%; padding: 16px; border: none; border-radius: 12px; cursor: pointer; 
-    font-size: 16px; margin-top: 25px; font-weight: 600; box-shadow: 0 8px 20px rgba(0,128,96,0.3);
+    font-size: 16px; margin-top: 25px; font-weight: 600; box-shadow: 0 8px 20px rgba(0,128,96,0.25);
+    transition: all 0.3s ease;
 }
+.auth-btn:active { transform: translateY(2px) scale(0.98); box-shadow: 0 4px 10px rgba(0,128,96,0.2); }
 
 /* --- OTHER --- */
-.location-btn { background: #e3f2fd; color: #1565c0; border: 1px dashed #1565c0; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 14px; transition: 0.2s; }
-.payment-tabs { background: #f5f5f5; border-radius: 12px; padding: 6px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-.tab-btn.active-tab { background: #fff; color: var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 10px; }
-.pay-option { border: 1px solid #eee; border-radius: 12px; padding: 15px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-.time-slot-card { border-radius: 12px; padding: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); background: #fff; margin-bottom: 10px; }
-.time-slot-card.selected-slot { border: 2px solid var(--primary-color); background: #e8f5e9; box-shadow: 0 4px 12px rgba(0,128,96,0.15); }
+.location-btn { background: #e3f2fd; color: #1565c0; border: 1px dashed #1565c0; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 14px; transition: 0.2s; text-align: center; }
+.payment-tabs { background: #f5f5f5; border-radius: 12px; padding: 6px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); display: flex; }
+.tab-btn { flex: 1; text-align: center; padding: 10px; font-weight: 600; cursor: pointer; border-radius: 10px; color: #666; transition: 0.3s; }
+.tab-btn.active-tab { background: #fff; color: var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.payment-methods { display: flex; gap: 10px; justify-content: space-between; }
+.pay-option { flex: 1; border: 1px solid #eee; border-radius: 12px; padding: 15px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.02); text-align: center; cursor: pointer; transition: 0.2s; }
+.pay-option:hover { border-color: var(--primary-color); background: #f8fcfb; }
+.pay-logo { height: 30px; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; }
+.pay-label { font-size: 12px; font-weight: 600; color: #333; }
+.time-slot-card { border-radius: 12px; padding: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); background: #fff; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.time-slot-card.selected-slot { border: 2px solid var(--primary-color); background: #f0fdf4; box-shadow: 0 4px 12px rgba(0,128,96,0.15); }
+
+/* --- SUCCESS OVERLAY (FIXED) --- */
+.success-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #ffffff; z-index: 5000; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+}
+.checkmark { width: 56px; height: 56px; border-radius: 50%; display: block; stroke-width: 2; stroke: #fff; stroke-miterlimit: 10; margin: 10% auto 20px auto; box-shadow: inset 0px 0px 0px #7ac142; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
+.checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #7ac142; fill: none; animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
+.checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; stroke: #7ac142; animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
+@keyframes stroke { 100% { stroke-dashoffset: 0; } }
+@keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+@keyframes fill { 100% { box-shadow: inset 0px 0px 0px 30px #7ac142; } }
 
 /* EDIT MODAL */
-.modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
-.modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 400px; border-radius: 15px; animation: fadeIn 0.3s; }
+.modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+.modal-content { background-color: #fefefe; margin: 15% auto; padding: 25px; border: none; width: 90%; max-width: 400px; border-radius: 20px; animation: fadeIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 
 /* Loading Spinner */
 .loading-spinner {
@@ -325,18 +383,18 @@ label { font-weight: 500; color: #555; }
     <input type="text" id="editProdImg" placeholder="Image URL will appear here" onchange="previewEditImage()">
     
     <div style="text-align:center; margin:10px 0;">
-        <img id="editImgPreview" src="" style="max-height:100px; border-radius:5px; border:1px solid #eee;">
+        <img id="editImgPreview" src="" style="max-height:100px; border-radius:8px; border:1px solid #eee;">
     </div>
     <label>Description</label>
-    <textarea id="editProdDesc" rows="2"></textarea>
+    <textarea id="editProdDesc" rows="3"></textarea>
     <button class="buy-btn" onclick="saveEditProduct()">Save Changes</button>
   </div>
 </div>
 
 <div id="authPage">
     <div style="width:100%; max-width:380px; text-align:center; padding: 20px;">
-        <h1 style="color:var(--primary-color); margin-bottom:5px; font-size: 32px; letter-spacing: -1px;">Ubaid Store</h1>
-        <p style="color:#888; font-size:15px; margin-bottom:40px; font-weight:300;">Premium Quality at your Doorstep</p>
+        <h1 style="color:var(--primary-color); margin-bottom:5px; font-size: 32px; letter-spacing: -1px; font-weight: 700;">Ubaid Store</h1>
+        <p style="color:#888; font-size:15px; margin-bottom:40px; font-weight:400;">Premium Quality at your Doorstep</p>
         
         <div class="form-card" style="box-shadow: 0 10px 40px rgba(0,0,0,0.08);">
             <div class="auth-input-group">
@@ -390,10 +448,10 @@ label { font-weight: 500; color: #555; }
 
     <div class="container hidden" id="cartPage">
         <div class="form-card">
-            <div class="page-title"><h3>🛒 Your Cart</h3><span style="font-size:13px; color:#666; background:#f5f5f5; padding:4px 10px; border-radius:15px;">Items: <span id="cartCountInner">0</span></span></div>
+            <div class="page-title"><h3>🛒 Your Cart</h3><span style="font-size:13px; color:#666; background:#f5f5f5; padding:6px 12px; border-radius:20px; font-weight: 600;">Items: <span id="cartCountInner">0</span></span></div>
             <div id="cartItems"></div>
             <div style="margin-top:25px; border-top:2px dashed #eee; padding-top:20px;">
-                <h3 id="cartTotal" style="text-align:right; margin:0; color:var(--primary-color); font-size:22px;">Total: ₹0</h3>
+                <h3 id="cartTotal" style="text-align:right; margin:0; color:var(--primary-color); font-size:24px;">Total: ₹0</h3>
             </div>
             <button class="buy-btn" style="margin-top:25px;" onclick="goToAddress('cart')">Proceed to Checkout</button>
         </div>
@@ -406,7 +464,7 @@ label { font-weight: 500; color: #555; }
             <input type="number" id="custPhone" placeholder="Mobile Number">
             <div class="location-btn" onclick="detectLocation()" id="locBtn"><span>📍</span> Use Current Location (GPS)</div>
             <textarea id="custAddress" rows="3" placeholder="Full Address (House No, Area, City)"></textarea>
-            <label style="display:flex; align-items:center; gap:10px; margin-top:10px; margin-bottom:20px; font-size:14px; color:#555; cursor:pointer; background:#f9f9f9; padding:10px; border-radius:10px;"><input type="checkbox" id="saveAddrCheckbox" checked style="width:auto; margin:0;"> Save this address for future</label>
+            <label style="display:flex; align-items:center; gap:10px; margin-top:10px; margin-bottom:20px; font-size:14px; color:#555; cursor:pointer; background:#f9f9f9; padding:12px; border-radius:12px;"><input type="checkbox" id="saveAddrCheckbox" checked style="width:auto; margin:0;"> Save this address for future</label>
             <hr style="border:0; border-top:1px dashed #ddd; margin: 20px 0;">
             <div id="checkoutItemsList"></div>
             <div id="checkoutBillDetails" style="margin-top: 20px; background: #fff8e1; padding: 20px; border-radius: 12px; border: 1px solid #ffe0b2;"></div>
@@ -426,12 +484,12 @@ label { font-weight: 500; color: #555; }
     <div class="container hidden" id="paymentPage">
         <div class="form-card">
             <div class="page-title"><h3>💳 Payment</h3><span class="close-page-btn" onclick="goToSlotPage()">✕</span></div>
-            <center><p style="color:#888; font-size:14px; margin-bottom:5px;">Total Amount</p><div class="total-pay-display" id="paymentTotalDisplay" style="color:var(--primary-color); font-size:32px; font-weight:700;">₹0</div></center>
-            <div class="payment-tabs" style="margin-top:20px;">
+            <center><p style="color:#888; font-size:14px; margin-bottom:5px;">Total Amount</p><div class="total-pay-display" id="paymentTotalDisplay" style="color:var(--primary-color); font-size:36px; font-weight:700;">₹0</div></center>
+            <div class="payment-tabs" style="margin-top:25px;">
                 <div class="tab-btn active-tab" id="tabOnline" onclick="togglePaymentMode('online')">Pay Online</div>
                 <div class="tab-btn" id="tabCOD" onclick="togglePaymentMode('cod')">Cash on Delivery</div>
             </div>
-            <div id="onlineSection" style="margin-top:20px;">
+            <div id="onlineSection" style="margin-top:25px;">
                 <p style="font-size:14px; font-weight:600; color:#333; margin-bottom:15px;">Select App:</p>
                 <div class="payment-methods">
                     <div class="pay-option" onclick="startRazorpayPayment()"><img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" class="pay-logo"><span class="pay-label">Paytm</span></div>
@@ -441,10 +499,10 @@ label { font-weight: 500; color: #555; }
                 <button class="buy-btn" style="margin-top:25px; background: #2874f0;" onclick="startRazorpayPayment()">Pay Now with Razorpay</button>
                 <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #999;">🔒 100% Secure Payments by Razorpay</div>
             </div>
-            <div id="codSection" class="hidden" style="margin-top:20px;">
-                <div class="cod-box" style="background: #e8f5e9; border: 1px dashed var(--primary-color); padding: 20px; border-radius: 12px; text-align: center;">
+            <div id="codSection" class="hidden" style="margin-top:25px;">
+                <div class="cod-box" style="background: #e8f5e9; border: 1px dashed var(--primary-color); padding: 25px; border-radius: 12px; text-align: center;">
                     <h3 style="margin:0 0 10px 0; color:var(--primary-dark);">💵 Cash on Delivery</h3>
-                    <p style="font-size:14px; color:#555;">Pay cash when the product arrives.</p>
+                    <p style="font-size:14px; color:#555; margin:0;">Pay cash when the product arrives.</p>
                 </div>
                 <button class="buy-btn" style="margin-top:25px; background:#ff6f00;" onclick="completeOrder('COD')">Confirm COD Order</button>
             </div>
@@ -452,7 +510,7 @@ label { font-weight: 500; color: #555; }
     </div>
     
     <div class="container hidden" id="myOrdersPage">
-        <div class="form-card" style="background:#f8f9fa; border:none; box-shadow:none;">
+        <div class="form-card" style="background:transparent; border:none; box-shadow:none; padding:10px;">
             <div class="page-title"><h3>📦 My Orders</h3><span class="close-page-btn" onclick="goHome()">✕</span></div>
             <div id="myOrderList" style="display:flex; flex-direction:column; gap:15px;"><div class="loading-spinner"></div></div>
         </div>
@@ -462,27 +520,27 @@ label { font-weight: 500; color: #555; }
         <div class="form-card">
             <div class="page-title"><h3>👨‍💼 Admin Panel</h3><span class="close-page-btn" onclick="goHome()">✕</span></div>
             
-            <div style="background: #e0f2f1; padding: 15px; border-radius: 12px; border: 1px solid #008060; margin-bottom: 25px;">
-                <h4 style="margin-top:0; color: #008060;">➕ Add New Product</h4>
-                <input type="text" id="newProdName" placeholder="Product Name (e.g. New Rice)" style="margin-top:5px;">
+            <div style="background: #e0f2f1; padding: 20px; border-radius: 16px; border: 1px solid #008060; margin-bottom: 30px;">
+                <h4 style="margin-top:0; margin-bottom:15px; color: #008060;">➕ Add New Product</h4>
+                <input type="text" id="newProdName" placeholder="Product Name (e.g. New Rice)">
                 <div style="display:flex; gap:10px;">
                     <input type="number" id="newProdPrice" placeholder="Price (₹)" style="flex:1;">
                     <input type="text" id="newProdRating" placeholder="Rating (e.g. 4.5)" value="4.5" style="flex:1;">
                 </div>
                 
-                <label style="font-size:12px; font-weight:600; margin-top:10px; display:block;">Photo (Gallery Upload)</label>
+                <label style="font-size:13px; font-weight:600; margin-top:10px; display:block;">Photo (Gallery Upload)</label>
                 <input type="file" id="newProdFile" accept="image/*" onchange="handleImageUpload(this, 'newProdImg', 'prevImgElement')">
-                <input type="text" id="newProdImg" placeholder="Or paste Image URL here" style="margin-bottom:5px;">
+                <input type="text" id="newProdImg" placeholder="Or paste Image URL here" style="margin-bottom:10px;">
                 
-                <div id="imgPreview" style="display:none; text-align:center; margin-bottom:10px;">
-                    <img id="prevImgElement" src="" style="height:60px; border-radius:5px; border:1px solid #ccc;">
+                <div id="imgPreview" style="display:none; text-align:center; margin-bottom:15px;">
+                    <img id="prevImgElement" src="" style="height:80px; border-radius:8px; border:1px solid #ccc;">
                 </div>
 
-                <textarea id="newProdDesc" rows="2" placeholder="Description (e.g. 1kg Pack fresh)" style="margin-top:0;"></textarea>
-                <button class="buy-btn" onclick="addNewProduct()" style="margin-top:10px; background:#008060;">Save to Store</button>
+                <textarea id="newProdDesc" rows="3" placeholder="Description (e.g. 1kg Pack fresh)" style="margin-top:0;"></textarea>
+                <button class="buy-btn" onclick="addNewProduct()" style="margin-top:15px; background:#008060;">Save to Store</button>
             </div>
 
-            <h4 style="margin-bottom:10px;">Recent Orders</h4>
+            <h4 style="margin-bottom:15px; color: #333;">Recent Orders</h4>
             <div id="adminOrderList" style="display:flex; flex-direction:column; gap:15px;"><div class="loading-spinner"></div></div>
         </div>
     </div>
@@ -715,53 +773,52 @@ auth.onAuthStateChanged(user => {
     } else {
         currentUser = null;
         cart = {};
+        // FIXED: Flex is needed for centering, not just 'flex' but also justify/align which are in CSS
         document.getElementById("authPage").style.display = "flex";
         document.getElementById("appContainer").classList.add("hidden");
         document.getElementById("verifyPage").classList.add("hidden");
     }
 });
 
-// --- HELPER FUNCTION FOR LONG DESCRIPTIONS ---
+// --- HELPER FUNCTION FOR LONG DESCRIPTIONS (AMAZON STYLE) ---
 function getDetailedDescription(name) {
     let lowerName = name.toLowerCase();
     
     if(lowerName.includes("soap") || lowerName.includes("sabun")) {
-        return `Experience the ultimate freshness with ${name}. This premium quality soap is formulated with natural ingredients that gently cleanse your skin while maintaining its natural moisture balance. Infused with a long-lasting fragrance, it leaves you feeling revitalized and confident throughout the day. Suitable for all skin types, this soap produces a rich, creamy lather that washes away dirt and impurities effectively. Dermatologically tested and safe for daily use. Make your bathing ritual a luxurious experience with the trusted care of ${name}. Perfect for the whole family. Use daily for soft, glowing, and healthy skin.`;
+        return `<b>Product Overview:</b><br>Experience the ultimate freshness with <b>${name}</b>. Formulated with skin-loving ingredients, it gently cleanses while maintaining your skin's natural moisture balance.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>✨ <b>Deep Cleansing:</b> Washes away dirt and impurities effectively.</li><li>🌸 <b>Long-Lasting Fragrance:</b> Keeps you feeling revitalized and confident all day.</li><li>💧 <b>Moisturizing:</b> Produces a rich, creamy lather that leaves skin soft.</li><li>🛡️ <b>Safe for Daily Use:</b> Dermatologically tested and suitable for the whole family.</li></ul>`;
     }
     
     if(lowerName.includes("shampoo") || lowerName.includes("conditioner")) {
-        return `Give your hair the care it deserves with ${name}. Enriched with vital nutrients and natural extracts, this formula strengthens hair from the roots to tips. It effectively removes oil, dirt, and dandruff while keeping your scalp healthy. Say goodbye to hair fall and dryness with regular use. Its advanced conditioning properties leave your hair silky, smooth, and manageable. Suitable for all hair types, this product adds a natural shine and bounce to your locks. Experience salon-like hair care at home with ${name}.`;
+        return `<b>Product Overview:</b><br>Give your hair the salon-like care it deserves with <b>${name}</b>. Enriched with vital nutrients and natural extracts, this advanced formula strengthens hair from roots to tips.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>🌿 <b>Root to Tip Care:</b> Strengthens and nourishes every strand.</li><li>✨ <b>Dandruff & Dirt Removal:</b> Cleanses the scalp effectively without drying it out.</li><li>💧 <b>Silky Smooth Finish:</b> Advanced conditioning properties for manageable hair.</li><li>🛡️ <b>Damage Control:</b> Reduces hair fall and adds a natural, healthy bounce.</li></ul>`;
     }
 
     if(lowerName.includes("oil") || lowerName.includes("tel")) {
-        return `Promote a healthy lifestyle with ${name}. Extracted from the finest quality seeds, this oil is rich in essential nutrients and antioxidants. It is processed using advanced technology to retain its natural aroma and flavor. Ideal for deep frying, sautéing, and everyday cooking, it ensures low absorption, making your meals lighter and healthier. It helps maintain healthy cholesterol levels and supports heart health. Add a touch of purity and taste to your dishes with ${name}. A must-have in every kitchen for delicious and nutritious meals.`;
+        return `<b>Product Overview:</b><br>Promote a healthier lifestyle with <b>${name}</b>. Extracted from the finest quality seeds using advanced technology, this oil retains its natural aroma, flavor, and essential nutrients.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>🍳 <b>Perfect for Indian Cooking:</b> Ideal for deep frying, sautéing, and everyday meals.</li><li>❤️ <b>Heart Healthy:</b> Helps maintain healthy cholesterol levels.</li><li>🍃 <b>Light & Non-Sticky:</b> Ensures low absorption, making your meals lighter.</li><li>🛡️ <b>100% Pure:</b> Unadulterated and hygienically packed for your safety.</li></ul>`;
     }
 
     if(lowerName.includes("atta") || lowerName.includes("flour") || lowerName.includes("besan") || lowerName.includes("maida")) {
-        return `Bring home the goodness of nature with our premium ${name}. Sourced from the finest fields and ground to perfection, this product ensures superior taste and texture. Rich in protein, dietary fiber, and essential minerals, it is the perfect choice for a healthy diet. Our hygienic packaging technology ensures that the freshness and nutrients are sealed in, giving you the authentic taste of home-cooked meals. Free from added preservatives and artificial colors. Ideal for making soft rotis, delicious parathas, and traditional sweets. Trust ${name} for purity and quality.`;
+        return `<b>Product Overview:</b><br>Bring home the wholesome goodness of nature with premium <b>${name}</b>. Sourced from the finest fields and perfectly ground, it guarantees superior taste and texture for your family's daily meals.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>🌾 <b>100% Fresh & Pure:</b> Ground to perfection for maximum nutrient retention.</li><li>💪 <b>Rich in Fiber & Protein:</b> Excellent choice for a balanced, healthy diet.</li><li>🍞 <b>Soft & Fluffy Output:</b> Ideal for making delicious rotis, parathas, or sweets.</li><li>🔒 <b>Hygienic Packaging:</b> Sealed tightly to lock in natural freshness and aroma.</li></ul>`;
     }
 
     if(lowerName.includes("dal") || lowerName.includes("pulses") || lowerName.includes("rajma") || lowerName.includes("chana")) {
-        return `Enjoy the authentic taste of Indian cuisine with superior quality ${name}. Carefully selected and sorted, these grains are unpolished to retain their natural goodness and nutritional value. Rich in protein and essential vitamins, they are a staple for a balanced diet. Easy to cook and delicious to eat, they provide a wholesome meal for your family. Sourced from the best farms, our ${name} promises consistency in taste and aroma. Perfect for making traditional curries and healthy salads. Experience the taste of purity in every bite.`;
+        return `<b>Product Overview:</b><br>Enjoy the authentic taste of Indian cuisine with superior quality <b>${name}</b>. Carefully selected, sorted, and unpolished to retain its maximum natural goodness and nutritional value.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>🍛 <b>Unpolished Goodness:</b> Retains essential vitamins and natural proteins.</li><li>⏱️ <b>Easy & Fast Cooking:</b> Cooks uniformly for a perfect texture.</li><li>💪 <b>Wholesome Nutrition:</b> A healthy staple for muscle building and energy.</li><li>🌾 <b>Farm Fresh Sourcing:</b> Picked from the best farms for consistent taste.</li></ul>`;
     }
 
     if(lowerName.includes("rice") || lowerName.includes("chawal") || lowerName.includes("basmati")) {
-        return `Savor the exquisite aroma and long grains of ${name}. Aged to perfection, this premium rice cooks to be fluffy, non-sticky, and full of flavor. Ideal for biryanis, pulao, and everyday meals, it adds a royal touch to your dining table. Sourced from the fertile fields, every grain is a testament to quality and purity. Rich in carbohydrates and easy to digest, it provides the energy you need for an active lifestyle. Make every meal a celebration with the superior taste of ${name}.`;
+        return `<b>Product Overview:</b><br>Savor the exquisite aroma and premium long grains of <b>${name}</b>. Aged to perfection, this rice cooks up fluffy, non-sticky, and full of rich flavor.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>🍚 <b>Extra Long Grains:</b> Expands beautifully upon cooking for a royal presentation.</li><li>🌸 <b>Rich Aroma:</b> Fills your kitchen with a delightful, natural fragrance.</li><li>🍛 <b>Versatile Use:</b> Perfect for Biryanis, Pulaos, and everyday steamed rice.</li><li>💯 <b>Premium Quality:</b> Sortex cleaned and aged for superior cooking results.</li></ul>`;
     }
 
     if(lowerName.includes("biscuit") || lowerName.includes("cookies") || lowerName.includes("rusk")) {
-        return `Delight your taste buds with the crispy and crunchy goodness of ${name}. Baked to perfection using high-quality ingredients, these are the perfect companion for your morning tea or evening snacks. Packed with energy and flavor, they are loved by kids and adults alike. Whether you are at home or on the go, ${name} offers a quick and tasty hunger solution. Free from harmful trans fats, it balances taste and health beautifully. Enjoy the classic taste that brings smiles to every face.`;
+        return `<b>Product Overview:</b><br>Delight your taste buds with the crispy, crunchy goodness of <b>${name}</b>. Baked to perfection using high-quality ingredients, it's the ultimate companion for your tea time or sudden hunger pangs.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>☕ <b>Perfect Tea-Time Snack:</b> Loved by kids and adults alike.</li><li>⚡ <b>Instant Energy:</b> Packed with wholesome ingredients for a quick boost.</li><li>🍪 <b>Crispy & Fresh:</b> Baked flawlessly to deliver the perfect crunch.</li><li>🛡️ <b>Zero Trans Fat:</b> A healthier snacking alternative without compromising taste.</li></ul>`;
     }
 
     if(lowerName.includes("masala") || lowerName.includes("spices") || lowerName.includes("haldi") || lowerName.includes("mirch") || lowerName.includes("jeera")) {
-        return `Enhance the flavor of your dishes with the aromatic and potent ${name}. Sourced from the best spice gardens, this product is ground at low temperatures to preserve its natural oils and vibrant color. It adds a rich, authentic taste to your curries and vegetables. Free from artificial fillers and additives, it guarantees purity in every pinch. Known for its medicinal properties and culinary excellence, ${name} is an essential ingredient in every Indian kitchen. Cook with confidence and flavor.`;
+        return `<b>Product Overview:</b><br>Enhance the flavor, color, and aroma of your dishes with potent <b>${name}</b>. Sourced from the best spice gardens and processed at low temperatures to preserve its natural oils.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>🌶️ <b>Rich Aroma & Flavor:</b> Adds an authentic, vibrant taste to your cooking.</li><li>❄️ <b>Cold-Ground Technology:</b> Retains natural essential oils and medicinal properties.</li><li>🚫 <b>No Artificial Colors:</b> 100% pure, unadulterated, and free from fillers.</li><li>🍲 <b>Kitchen Essential:</b> The secret ingredient to perfect Indian curries.</li></ul>`;
     }
 
-    // Default Description for others
-    return `Discover the premium quality of ${name}, brought to you by Ubaid Kirana Store. This product is selected with great care to ensure it meets the highest standards of quality and freshness. Whether for daily use or special occasions, it delivers consistent performance and satisfaction. We believe in providing our customers with only the best, and this product is no exception. Packed hygienically to retain its natural properties, it offers great value for money. Add ${name} to your cart today and experience the difference in quality and service.`;
+    // Default Description
+    return `<b>Product Overview:</b><br>Discover the premium quality of <b>${name}</b>, specially curated by Ubaid Kirana Store. We handpick our products to ensure they meet the highest standards of freshness and purity.<br><br><b>Key Benefits:</b><ul style="margin: 5px 0 0 20px; padding: 0;"><li>🌟 <b>Assured Quality:</b> Carefully sourced for consistent performance and satisfaction.</li><li>🛡️ <b>Hygienic Packaging:</b> Packed safely to retain its natural properties.</li><li>💰 <b>Value for Money:</b> Premium experience at an affordable price.</li><li>🚚 <b>Ready to Deliver:</b> Fresh stock prepared for quick dispatch to your doorstep.</li></ul>`;
 }
-
-// ... (Rest of the previous code functions remain exactly the same: loadUserProfile, loadUserCart, saveUserCart, etc.) ...
 
 let userProfileData = {};
 
@@ -867,6 +924,9 @@ function displayProducts(){
             adminBtn = `<button class="admin-edit-btn" onclick="openEditModal(${p.id}, event)">✏️ Edit</button>`;
         }
 
+        /* FIXED: Using replace(/<[^>]+>/g, ' ') here so HTML tags don't break the small grid view design */
+        let shortTextDesc = p.desc.replace(/<[^>]+>/g, ' ');
+
         return `
         <div class="product-item">
             ${adminBtn}
@@ -877,10 +937,10 @@ function displayProducts(){
                 <b>${p.name}</b>
                 <div class="rating-row">
                     <div class="rating-badge">${p.rating} ★</div>
-                    <span class="rating-count">(${p.reviews})</span>
+                    <span class="rating-count" style="font-size:11px; color:#888;">(${p.reviews})</span>
                     <div class="f-assured" style="margin-left:auto; display:flex; align-items:center;"><img src="u_fire_logo.jpg" alt="U" onerror="this.style.display='none'" style="height:14px;"><span class="f-assured-text" style="color:#2874f0; font-size:10px; font-weight:700; font-style:italic;">Assured</span></div>
                 </div>
-                <div class="product-desc-text" style="font-size:10px;">${p.desc}</div> <div class="price-tag">₹${p.price}</div>
+                <div class="product-desc-text">${shortTextDesc}</div> <div class="price-tag">₹${p.price}</div>
             </div>
             <div class="btn-group">
                 ${cartItem ? 
@@ -984,10 +1044,9 @@ function openProductDetails(id) {
     
     const cartItem = cart[p.id];
     
-    // UPDATED: Shuffle and slice for unique/random recommendations
     let relatedHtml = products.filter(x => x.id !== id)
-                              .sort(() => 0.5 - Math.random()) // Randomize order
-                              .slice(0, 6) // Take 6 items
+                              .sort(() => 0.5 - Math.random()) 
+                              .slice(0, 6) 
                               .map(r => `
         <div class="rel-card" onclick="openProductDetails(${r.id})">
             <img src="${r.img}" class="rel-img" loading="lazy" onerror="this.src='https://via.placeholder.com/100?text=Product'">
@@ -1010,38 +1069,37 @@ function openProductDetails(id) {
             <div class="pd-main-title">${p.name}</div>
             
             <div class="rating-row">
-                <div class="rating-badge" style="font-size:13px; padding:4px 8px;">${p.rating} ★</div>
-                <span class="rating-count" style="font-size:13px;">(${p.reviews} Ratings)</span>
-                <div class="f-assured"><img src="u_fire_logo.jpg" style="height:16px" onerror="this.style.display='none'"><span class="f-assured-text" style="color:#2874f0; font-weight:700; font-style:italic;">Assured</span></div>
+                <div class="rating-badge" style="font-size:14px; padding:6px 12px;">${p.rating} ★</div>
+                <span class="rating-count" style="font-size:14px; color:#666; font-weight:500;">(${p.reviews} Ratings)</span>
+                <div class="f-assured"><img src="u_fire_logo.jpg" style="height:18px" onerror="this.style.display='none'"><span class="f-assured-text" style="color:#2874f0; font-weight:700; font-style:italic;">Assured</span></div>
             </div>
 
             <div class="pd-price">₹${p.price}</div>
 
             <div class="pd-desc-box">
-                <div class="pd-label">Description</div>
+                <div class="pd-label">Product Information</div>
                 <div class="pd-text">${p.desc}</div>
             </div>
-
             <div class="related-section">
-                <div class="related-header" style="font-weight:700; margin-bottom:15px; color:#333;">You might also like</div>
+                <div class="related-header" style="font-size:18px; font-weight:700; margin-bottom:15px; color:#1a1a1a;">You might also like</div>
                 <div class="related-grid">
                     ${relatedHtml}
                 </div>
             </div>
 
-            <div class="pd-badges" style="margin-top:20px;">
-                <span class="badge-pill b-assured" style="background:#e3f2fd; color:#1565c0; padding:5px 10px; border-radius:15px; font-size:12px; margin-right:5px;">🛡️ Ubaid Assured</span>
-                <span class="badge-pill b-cod" style="background:#fff3e0; color:#ef6c00; padding:5px 10px; border-radius:15px; font-size:12px; margin-right:5px;">🚚 COD Available</span>
-                <span class="badge-pill b-fresh" style="background:#e8f5e9; color:#2e7d32; padding:5px 10px; border-radius:15px; font-size:12px;">🍃 Fresh Product</span>
+            <div class="pd-badges" style="margin-top:25px; padding-bottom:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                <span class="badge-pill b-assured" style="background:#e3f2fd; color:#1565c0; padding:8px 12px; border-radius:20px; font-size:13px; font-weight:600;">🛡️ Ubaid Assured</span>
+                <span class="badge-pill b-cod" style="background:#fff3e0; color:#ef6c00; padding:8px 12px; border-radius:20px; font-size:13px; font-weight:600;">🚚 COD Available</span>
+                <span class="badge-pill b-fresh" style="background:#e8f5e9; color:#2e7d32; padding:8px 12px; border-radius:20px; font-size:13px; font-weight:600;">🍃 Fresh Product</span>
             </div>
         </div>
 
         <div class="pd-footer-actions">
             ${cartItem ? 
-                `<div class="qty-btn-group" style="flex:1; height:45px;"><span onclick="updateQty(${p.id}, -1)">−</span><span class="qty-val">${cartItem.qty}</span><span onclick="updateQty(${p.id}, 1)">+</span></div>` : 
-                `<button class="add-btn" style="flex:1; padding:12px 0;" onclick="updateQty(${p.id}, 1)">ADD TO CART</button>`
+                `<div class="qty-btn-group" style="flex:1; height:48px;"><span onclick="updateQty(${p.id}, -1)">−</span><span class="qty-val" style="line-height:48px;">${cartItem.qty}</span><span onclick="updateQty(${p.id}, 1)">+</span></div>` : 
+                `<button class="add-btn" style="flex:1; padding:14px 0;" onclick="updateQty(${p.id}, 1)">ADD TO CART</button>`
             }
-            <button class="buy-btn" style="flex:1" onclick="buyNow(${p.id})">BUY NOW</button>
+            <button class="buy-btn" style="flex:1; padding:14px 0;" onclick="buyNow(${p.id})">BUY NOW</button>
         </div>
     `;
 
@@ -1080,26 +1138,26 @@ function updateCartDisplay(){
         <div class="cart-row">
             <img src="${item.img}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/60?text=Item'">
             <div style="flex:1;">
-                <div style="font-size:15px; font-weight:600; color:#333;">${item.name}</div>
-                <div style="font-size:13px; color:#888;">Unit Price: ₹${item.price}</div>
-                <div class="cart-controls-mini" style="display:inline-flex;">
-                    <div class="cart-btn-mini" onclick="updateQty(${item.id}, -1)" style="padding:4px 12px; background:#f5f5f5; cursor:pointer; color:var(--primary-color);">−</div>
-                    <div class="cart-qty-mini" style="padding:4px 12px; font-weight:600; border-left:1px solid #eee; border-right:1px solid #eee;">${item.qty}</div>
-                    <div class="cart-btn-mini" onclick="updateQty(${item.id}, 1)" style="padding:4px 12px; background:#f5f5f5; cursor:pointer; color:var(--primary-color);">+</div>
+                <div style="font-size:15px; font-weight:600; color:#333; margin-bottom:4px;">${item.name}</div>
+                <div style="font-size:13px; color:#888; margin-bottom:8px;">Unit Price: ₹${item.price}</div>
+                <div class="cart-controls-mini" style="display:inline-flex; overflow:hidden;">
+                    <div class="cart-btn-mini" onclick="updateQty(${item.id}, -1)" style="padding:4px 14px; background:#f9f9f9; cursor:pointer; color:var(--primary-color); font-weight:bold;">−</div>
+                    <div class="cart-qty-mini" style="padding:4px 14px; font-weight:600; border-left:1px solid #eee; border-right:1px solid #eee;">${item.qty}</div>
+                    <div class="cart-btn-mini" onclick="updateQty(${item.id}, 1)" style="padding:4px 14px; background:#f9f9f9; cursor:pointer; color:var(--primary-color); font-weight:bold;">+</div>
                 </div>
             </div>
-            <div style="font-weight:700; font-size:16px; margin-left:10px;">₹${item.price * item.qty}</div>
+            <div style="font-weight:700; font-size:16px; margin-left:10px; color:var(--primary-dark);">₹${item.price * item.qty}</div>
         </div>`;
     });
     let deliveryCharge = (subTotal > 0 && subTotal < 199) ? 20 : 0;
-    let deliveryText = (deliveryCharge > 0) ? "₹20" : "<span style='color:green'>Free</span>";
+    let deliveryText = (deliveryCharge > 0) ? "₹20" : "<span style='color:green; font-weight:600;'>Free</span>";
     let finalTotal = subTotal + deliveryCharge;
     
-    if(subTotal > 0) html += `<div style="display:flex;justify-content:space-between;align-items:center; padding:15px 0; border-bottom:1px solid #eee; color:#666;"><div style="font-size:14px;">Delivery Charge</div><b>${deliveryText}</b></div>`;
+    if(subTotal > 0) html += `<div style="display:flex;justify-content:space-between;align-items:center; padding:15px 0; color:#666;"><div style="font-size:15px; font-weight:500;">Delivery Charge</div><b style="font-size:15px;">${deliveryText}</b></div>`;
 
     document.getElementById("cartCountBadge").innerText = totalItems;
     document.getElementById("cartCountInner").innerText = totalItems;
-    document.getElementById("cartItems").innerHTML = html || "<div style='text-align:center; padding:40px 20px; color:#999'><div style='font-size:40px; margin-bottom:10px;'>🛒</div>Your Cart is Empty</div>";
+    document.getElementById("cartItems").innerHTML = html || "<div style='text-align:center; padding:50px 20px; color:#999'><div style='font-size:45px; margin-bottom:15px;'>🛒</div><div style='font-size:16px; font-weight:500;'>Your Cart is Empty</div></div>";
     document.getElementById("cartTotal").innerText = "Total: ₹" + finalTotal;
 }
 
@@ -1133,33 +1191,33 @@ function goToAddress(mode, isRefresh = false){
     
     let itemsHtml = items.map(i => `
         <div class="checkout-item" style="display:flex; align-items:center;">
-            <img src="${i.img}" class="checkout-img" onerror="this.src='https://via.placeholder.com/50?text=Item'" style="width:50px; height:50px; object-fit:contain; border:1px solid #eee; border-radius:8px; margin-right:10px;">
+            <img src="${i.img}" class="checkout-img" onerror="this.src='https://via.placeholder.com/50?text=Item'" style="width:50px; height:50px; object-fit:contain; border:1px solid #eee; border-radius:8px; margin-right:12px; padding:2px; background:#fff;">
             <div class="checkout-info" style="flex:1;">
-                <div style="font-size:14px; font-weight:600;">${i.name}</div>
-                <div style="font-size:12px; color:#666;">₹${i.price}</div>
-                <div class="checkout-controls" style="display:flex; border:1px solid #ddd; width:fit-content; border-radius:6px; margin-top:5px; overflow:hidden;">
-                    <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, -1)" style="padding:2px 10px; background:#f9f9f9; cursor:pointer;">−</div>
-                    <div class="checkout-qty" style="padding:2px 10px; font-size:13px; font-weight:600; border-left:1px solid #ddd; border-right:1px solid #ddd;">${i.qty}</div>
-                    <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, 1)" style="padding:2px 10px; background:#f9f9f9; cursor:pointer;">+</div>
+                <div style="font-size:14px; font-weight:600; color:#333;">${i.name}</div>
+                <div style="font-size:13px; color:#666; margin-bottom:6px;">₹${i.price}</div>
+                <div class="checkout-controls" style="display:inline-flex; border:1px solid #ddd; border-radius:6px; overflow:hidden;">
+                    <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, -1)" style="padding:2px 12px; background:#f9f9f9; cursor:pointer; font-weight:bold;">−</div>
+                    <div class="checkout-qty" style="padding:2px 12px; font-size:13px; font-weight:600; border-left:1px solid #ddd; border-right:1px solid #ddd;">${i.qty}</div>
+                    <div class="checkout-btn" onclick="updateQtyCheckout(${i.id}, 1)" style="padding:2px 12px; background:#f9f9f9; cursor:pointer; font-weight:bold;">+</div>
                 </div>
             </div>
-            <div style="font-weight:700; font-size:15px; margin-left:10px;">₹${i.price * i.qty}</div>
+            <div style="font-weight:700; font-size:15px; margin-left:10px; color:var(--primary-dark);">₹${i.price * i.qty}</div>
         </div>
     `).join("");
 
-    document.getElementById("checkoutItemsList").innerHTML = `<h4 style="margin:0 0 15px 0; color:#444;">🛒 Your Basket</h4>${itemsHtml}`;
+    document.getElementById("checkoutItemsList").innerHTML = `<h4 style="margin:0 0 15px 0; color:#333; font-size:16px;">🛒 Your Basket</h4>${itemsHtml}`;
     
-    let deliveryText = (deliveryCharge === 0) ? `<span style="color:green; font-weight:bold;">FREE</span>` : `<span style="color:red; font-weight:bold;">₹20</span>`;
+    let deliveryText = (deliveryCharge === 0) ? `<span style="color:#2e7d32; font-weight:bold;">FREE</span>` : `<span style="color:#d32f2f; font-weight:bold;">₹20</span>`;
     let freeDelNote = (itemTotal < 199) ? 
-        `<div style="font-size:12px; color:#1976d2; margin-top:5px; background:#e3f2fd; padding:10px; border-radius:8px; border:1px dashed #1976d2; font-weight:600;">ℹ️ Add items worth ₹${199 - itemTotal} more for FREE Delivery!</div>` : 
-        `<div style="font-size:12px; color:#2e7d32; margin-top:5px; background:#e8f5e9; padding:10px; border-radius:8px; border:1px dashed #2e7d32; font-weight:600;">✅ Free Delivery Applied</div>`;
+        `<div style="font-size:12px; color:#1976d2; margin-top:10px; background:#e3f2fd; padding:10px; border-radius:8px; border:1px dashed #1976d2; font-weight:600;">ℹ️ Add items worth ₹${199 - itemTotal} more for FREE Delivery!</div>` : 
+        `<div style="font-size:12px; color:#2e7d32; margin-top:10px; background:#e8f5e9; padding:10px; border-radius:8px; border:1px dashed #2e7d32; font-weight:600;">✅ Free Delivery Applied</div>`;
 
     document.getElementById("checkoutBillDetails").innerHTML = `
-        <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:8px;"><span>Item Total</span> <b>₹${itemTotal}</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:16px; margin-bottom:12px;"><span>Delivery Charge</span> ${deliveryText}</div>
-        <hr style="border-top:1px dashed #bbb; margin:10px 0;">
-        <div style="display:flex; justify-content:space-between; font-size:22px; color:var(--primary-color); margin-top:8px;"><strong>TOTAL</strong> <strong>₹${finalTotal}</strong></div>
-        <div style="text-align:center; margin-top:8px;">${freeDelNote}</div>
+        <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:8px; color:#555;"><span>Item Total</span> <b>₹${itemTotal}</b></div>
+        <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:12px; color:#555;"><span>Delivery Charge</span> ${deliveryText}</div>
+        <hr style="border-top:1px dashed #cfd8dc; margin:15px 0;">
+        <div style="display:flex; justify-content:space-between; font-size:22px; color:var(--primary-dark); margin-top:8px;"><strong>TOTAL</strong> <strong>₹${finalTotal}</strong></div>
+        <div style="text-align:center; margin-top:10px;">${freeDelNote}</div>
     `;
     
     if(!isRefresh) {
@@ -1252,7 +1310,7 @@ function generateSlots() {
     if (currentHour >= 17) { isTomorrow = true; availableSlots = slots; } else { availableSlots = slots.filter(s => currentHour < s.cutoff); if(availableSlots.length === 0) { isTomorrow = true; availableSlots = slots; } }
     const dayText = isTomorrow ? "TOMORROW" : "TODAY";
     availableSlots.forEach(slot => {
-        const div = document.createElement("div"); div.className = "time-slot-card"; div.innerHTML = `<span class="slot-time">${slot.label}</span> <span class="slot-day">${dayText}</span>`;
+        const div = document.createElement("div"); div.className = "time-slot-card"; div.innerHTML = `<span class="slot-time" style="font-weight:600; color:#333;">${slot.label}</span> <span class="slot-day" style="font-size:12px; font-weight:bold; color:#888; background:#f0f0f0; padding:4px 8px; border-radius:6px;">${dayText}</span>`;
         div.onclick = () => { document.querySelectorAll(".time-slot-card").forEach(e => e.classList.remove("selected-slot")); div.classList.add("selected-slot"); selectedSlot = `${dayText} (${slot.label})`; };
         container.appendChild(div);
     });
@@ -1308,7 +1366,7 @@ function loadCustomerOrders(){
         let orders = []; let myOrdersCount = 0;
         let html=""; 
         snapshot.forEach(doc => { let data = doc.data(); if(data.userEmail === currentUser.email) { orders.push({id: doc.id, ...data}); myOrdersCount++; } });
-        if(myOrdersCount === 0) { list.innerHTML = "<div style='text-align:center; padding:40px; color:#888;'><h3>📦</h3>You haven't placed any orders yet.</div>"; return; }
+        if(myOrdersCount === 0) { list.innerHTML = "<div style='text-align:center; padding:50px 20px; color:#888;'><div style='font-size:45px; margin-bottom:15px;'>📦</div><div style='font-size:16px;'>You haven't placed any orders yet.</div></div>"; return; }
         orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         orders.forEach(o => { html += renderOrderCard(o, false); }); list.innerHTML = html;
     });
@@ -1350,16 +1408,16 @@ function renderOrderCard(o, isAdmin) {
     let color = '#ff9800'; if(o.status === 'Confirmed') color = '#2196f3'; if(o.status === 'Delivered') color = '#4caf50';
     let pm = o.paymentMethod || ''; if(pm.includes('COD')) color = '#795548'; 
     let dateStr = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString() : 'Just now';
-    let itemsHtml = ''; if (o.items && Array.isArray(o.items)) { itemsHtml = o.items.map(i => `<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.name} x${i.qty}</span><span>₹${i.price * i.qty}</span></div>`).join(""); }
-    let deliveryRow = ""; if(o.deliveryCharge && o.deliveryCharge > 0) { deliveryRow = `<div style="font-size:13px; display:flex; justify-content:space-between; color:#d32f2f; margin-top:5px;"><span>Delivery Charge</span><span>₹${o.deliveryCharge}</span></div>`; }
-    let mapLink = ""; if(isAdmin && o.gpsLocation && o.gpsLocation.lat && o.gpsLocation.lng) { const googleMapsUrl = `http://maps.google.com/maps?q=${o.gpsLocation.lat},${o.gpsLocation.lng}`; mapLink = `<a href="${googleMapsUrl}" target="_blank" style="display:inline-block; margin-top:8px; color:#fff; background:#4285F4; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:12px; font-weight:600;">🗺️ Open in Google Maps</a>`; }
+    let itemsHtml = ''; if (o.items && Array.isArray(o.items)) { itemsHtml = o.items.map(i => `<div style="font-size:13px; display:flex; justify-content:space-between; margin-bottom:6px; color:#444;"><span>${i.name} x${i.qty}</span><span style="font-weight:600;">₹${i.price * i.qty}</span></div>`).join(""); }
+    let deliveryRow = ""; if(o.deliveryCharge && o.deliveryCharge > 0) { deliveryRow = `<div style="font-size:13px; display:flex; justify-content:space-between; color:#d32f2f; margin-top:8px; border-top:1px dashed #ccc; padding-top:8px;"><span>Delivery Charge</span><span style="font-weight:600;">₹${o.deliveryCharge}</span></div>`; }
+    let mapLink = ""; if(isAdmin && o.gpsLocation && o.gpsLocation.lat && o.gpsLocation.lng) { const googleMapsUrl = `http://maps.google.com/maps?q=${o.gpsLocation.lat},${o.gpsLocation.lng}`; mapLink = `<a href="${googleMapsUrl}" target="_blank" style="display:inline-block; margin-top:10px; color:#fff; background:#4285F4; padding:8px 14px; border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; box-shadow:0 2px 6px rgba(66,133,244,0.3);">🗺️ Open in Google Maps</a>`; }
     let adminControls = "";
     if (isAdmin) {
         let nextStatus = "", btnLabel = "", btnBg = "";
         if(o.status === "Pending") { nextStatus = "Confirmed"; btnLabel = "✅ Accept Order"; btnBg = "#2e7d32"; } else if(o.status === "Confirmed") { nextStatus = "Delivered"; btnLabel = "🚚 Mark Delivered"; btnBg = "#1976d2"; } else { nextStatus = "Pending"; btnLabel = "↩ Reset"; btnBg = "#555"; }
-        adminControls = `<div style="margin-top:15px; padding-top:15px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; font-weight:600;">📞 <a href="tel:${o.phone}" style="color:blue;text-decoration:none;">${o.phone}</a></span><button onclick="updateStatus('${o.id}','${nextStatus}')" style="background:${btnBg}; color:#fff; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-size:13px; font-weight:bold;">${btnLabel}</button></div>`;
+        adminControls = `<div style="margin-top:15px; padding-top:15px; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; font-weight:600;">📞 <a href="tel:${o.phone}" style="color:blue;text-decoration:none;">${o.phone}</a></span><button onclick="updateStatus('${o.id}','${nextStatus}')" style="background:${btnBg}; color:#fff; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-size:13px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);">${btnLabel}</button></div>`;
     }
-    return `<div class="order-card" style="border-left:5px solid ${color}; background:#fff; padding:15px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.05);"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>${o.name || 'User'}</strong> <span class="status-pill" style="background:${color}; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:#fff; text-transform:uppercase;">${o.status}</span></div><div style="font-size:12px; color:#666; margin-bottom:8px;">${dateStr} • ₹${o.total} • ${o.paymentMethod}</div><div style="font-size:14px; font-weight:bold; color:var(--primary-color); margin: 6px 0;">⏰ ${o.deliverySlot || 'Standard Delivery'}</div><div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-top:8px;"><div style="font-size:12px; font-weight:bold; color:#333; margin-bottom:5px;">Items:</div>${itemsHtml}${deliveryRow}</div><div style="font-size:12px; color:#555; margin-top:10px; line-height:1.4;">📍 ${o.address} <br>${mapLink}</div>${adminControls}</div>`;
+    return `<div class="order-card" style="border-left:6px solid ${color}; background:#fff; padding:18px; border-radius:16px; margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.04);"><div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items:center;"><strong style="font-size:15px; color:#333;">${o.name || 'User'}</strong> <span class="status-pill" style="background:${color}; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:bold; color:#fff; text-transform:uppercase;">${o.status}</span></div><div style="font-size:13px; color:#666; margin-bottom:8px; display:flex; justify-content:space-between;"><span>${dateStr}</span> <span style="font-weight:600;">₹${o.total}</span></div><div style="font-size:12px; color:#888; margin-bottom:10px;">💳 ${o.paymentMethod}</div><div style="font-size:14px; font-weight:bold; color:var(--primary-dark); margin: 8px 0; background:#e8f5e9; padding:8px 12px; border-radius:8px; display:inline-block;">⏰ ${o.deliverySlot || 'Standard Delivery'}</div><div style="background:#f9fcfb; padding:12px; border-radius:10px; margin-top:12px; border:1px solid #e0f2f1;"><div style="font-size:13px; font-weight:bold; color:#333; margin-bottom:8px;">Items Ordered:</div>${itemsHtml}${deliveryRow}</div><div style="font-size:13px; color:#555; margin-top:12px; line-height:1.5;">📍 ${o.address} <br>${mapLink}</div>${adminControls}</div>`;
 }
 function updateStatus(id, newStatus){ if(!confirm("Change status to " + newStatus + "?")) return; db.collection("orders").doc(id).update({ status: newStatus }).catch((error) => { alert("Error updating status: " + error.message); }); }
 function filter(){ let q=document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll(".product-item").forEach(p=>p.style.display=p.innerText.toLowerCase().includes(q)?"flex":"none"); }
